@@ -14,7 +14,7 @@ if os.path.exists(os.getcwd() + "/config.json"):
         configData = json.load(f)
 
 else:
-    configTemplate = {"Token": "", "Prefix": "$"}
+    configTemplate = {"Token": "", "Prefix": "!"}
 
     with open(os.getcwd() + "/config.json", "w+") as f: #created the json file
         json.dump(configTemplate, f)
@@ -23,36 +23,32 @@ else:
 token =  configData["Token"]
 prefix = configData["Prefix"]
 
-bot = commands.Bot(command_prefix=prefix)
 
-#enable different cogs while bots running 
-# !loadclog filename
-@bot.command()
-async def loadcog(ctx, cog):
-    bot.load_extension(f"cogs.{cog}")
-    await ctx.send(f"{cog} file has been enabled.")
+# turn off messages from guilds, so you only get messages from DM channels
+my_intents = discord.Intents.default()
+my_intents.guild_messages = False 
+# optionally turn on members or presences here if you need them
+bot = commands.Bot(command_prefix=prefix, intents=my_intents)
+bot.remove_command('help') 
 
-#disable different cogs while bots running
-# !unloadclog filename
-@bot.command()
-async def unloadcog(ctx, cog):
-    bot.unload_extension(f"cogs.{cog}") 
-    await ctx.send(f"{cog} file has been disabled.")
-       
+
+
+
+if __name__ == '__main__':
+
+    @bot.event
+    async def on_ready():
+        print('Hooty and the bot is ready.')
+        await bot.change_presence(activity= discord.Game(name=f"{prefix} - prefix"))
+        bot.load_extension("cogs.events")
+        bot.load_extension("cogs.admin")
+
+
+#dont think ill need this anymore...
 
 #loop through files in directory to load cogs.
-for filename in os.listdir("./cogs"):
-    if filename.endswith(".py"):
-        bot.load_extension(f"cogs.{filename[:-3]}")
+    # for filename in os.listdir("./cogs"):
+    #     if filename.endswith(".py"):
+    #         bot.load_extension(f"cogs.{filename[:-3]}")
 
-
-bot.run(token)
-
-# async def on_message(message):
-#     if message.author == bot.user:
-#         return
-        
-#     if message.content.startswith('$hooty'):
-#         await message.channel.send('Hoot Hoot, im here!')
-#         await message.channel.send('Please copy and past your information into the contribution form below. \n\nContribution Form: \n1. [Discord Username] \n2. [Working Group Association]\n3. [Contribution sheet link] \n')
-        
+    bot.run(token)
