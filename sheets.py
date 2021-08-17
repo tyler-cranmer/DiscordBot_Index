@@ -9,7 +9,7 @@ scope = [
 'https://www.googleapis.com/auth/drive'
 ]
 
-credentials = ServiceAccountCredentials.from_json_keyfile_name("googleSheets.json", scope) #access the json key you downloaded earlier 
+credentials = ServiceAccountCredentials.from_json_keyfile_name("googleCredential.json", scope) #access the json key you downloaded earlier 
 client = gspread.authorize(credentials) # authenticate the JSON key with gspread
 sheet = client.open("discordTests")  #opens discordTests google sheets
 sheet1 = sheet.worksheet("Sheet1") #access Sheet1
