@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import json
+import clearsheets
 
 # Opens Json File to check for Admin Id
 with open("./config.json") as f:
@@ -55,6 +56,15 @@ class Admin(commands.Cog):
         await ctx.send(f"{cog} file has been disabled.")
 
 
+    #GoogleSheet Commands
+    #!Clear
+    # @commands.command(name='clear')
+    # @is_owner()
+    # async def clear(self, ctx):
+    #     self.bot.clearsheets.clearLastMonthsData()
+    #     await ctx.send("Master Sheet has be cleared")
+
+
     #Admin Help Command
     @commands.command(name='adminHelp')
     @is_owner()
@@ -71,6 +81,7 @@ class Admin(commands.Cog):
         embed.add_field(name='!adminHelp', value= '- Displays list of Admin controls', inline = False)
         embed.add_field(name='!loadcog className', value= '- Enables different class functions', inline = False)
         embed.add_field(name='!unloadcog className', value= '- Disables different class functions', inline = False)
+        embed.add_field(name='!clear', value= '- Clears MasterSheet Data', inline = False)
         embed.set_footer(text = 'If there is any problems with the bot, please contact {add contact}')
         
         await ctx.send(embed=embed)
