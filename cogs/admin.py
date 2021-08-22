@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import json
-import clearsheets
+# from googleSheets import clearsheets
 
 # Opens Json File to check for Admin Id
 with open("./config.json") as f:
