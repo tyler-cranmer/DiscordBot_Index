@@ -7,8 +7,8 @@ from newContributor import Contributor
 # ----------   ------------   --------------  
 ################################################################################
 #        SINGLE CONTRIBUTION TABLE
-# USER_ID    DATE     CONTRIBUTION_INFO   LINKS    OTHER_NOTES  FUNCTIONAL_GROUP 
-#--------  --------   -----------------  -------   -----------  ----------------
+#  USER_ID    DATE     CONTRIBUTION_INFO   LINKS    OTHER_NOTES  FUNCTIONAL_GROUP 
+# ---------  --------   -----------------  -------   -----------  ----------------
 ################################################################################
 
 
@@ -38,11 +38,6 @@ def create(dbname):
         FUNCTIONAL_GROUP TEXT NOT NULL,
         FOREIGN KEY(USER_ID) REFERENCES CONTRIBUTORS(USER_ID)
     ) """)
-
-    # c.execute("""CREATE TABLE monthlyContribution(
-    #     DATE TEXT NOT NULL,
-    #     user
-    # )""")
 
     connection.commit()
     connection.close()
@@ -96,7 +91,7 @@ def changeWallet(dbname, userId, walletAddress):
     connection.close()
 
 ##
-# Function to insert a single contribution into Table.
+# Function to insert a single contribution into table.
 #
 # PARAMS:
 # dbname - database name (str)

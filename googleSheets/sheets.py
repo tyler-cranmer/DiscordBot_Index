@@ -2,11 +2,12 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from pprint import pprint
 import json
+import sqlite3
+import db
 
 
 #https://collab-land.gitbook.io/collab-land/bots/discord
 #https://wickbot.com/
-
 
 
 scope = [
