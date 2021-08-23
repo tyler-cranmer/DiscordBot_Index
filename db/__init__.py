@@ -1,5 +1,7 @@
-from db.database import create
-from db.database import AddContributor
-from db.database import AddContribution
-from db.database import changeWallet
-from db.newContributor import Contributor
+# from . import *
+# from DB import AddContributor
+# from DB import AddContribution
+# from DB import changeWallet
+from DB.newContributor import Contributor
+
+print("loaded __init__ something")

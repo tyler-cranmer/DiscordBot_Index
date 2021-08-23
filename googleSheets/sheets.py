@@ -2,9 +2,6 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from pprint import pprint
 import json
-import sqlite3
-import db
-
 
 #https://collab-land.gitbook.io/collab-land/bots/discord
 #https://wickbot.com/
@@ -22,6 +19,7 @@ client = gspread.authorize(credentials) # authenticate the JSON key with gspread
 sheet = client.open("discordTests")  #opens discordTests google sheets
 contributionSheet1 = sheet.worksheet("Person1")
 contributionSheet2 = sheet.worksheet("Person2")
+userInfoSheet = sheet.worksheet("Sheet2")
 masterSheet = sheet.worksheet("MasterSheet main") #access Sheet1
 businessDevSheet = sheet.worksheet("BD")
 productSheet = sheet.worksheet("Product")
@@ -43,8 +41,7 @@ otherSheet = sheet.worksheet("Other")
 ranges = ['A3:F51']
 user_data = contributionSheet1.batch_get(ranges)
 
-
-#create a new list of lists,  
+# create a new list of lists,  
 bd_data = []
 product_data = []
 treasury_data = []
@@ -139,74 +136,76 @@ functionalDataList = [bd_data, product_data, treasury_data, creative_data, engin
 
 #Updates each Working Groups Mastersheet with the contributors data.
 
-start = 4
-nextLine = 0
 
-businessDevSheet.batch_update([{
-    'range': f'A{start}',
-    'values': bd_data,
-}])
+print(bd_data)
+# start = 4
+# nextLine = 0
 
-productSheet.batch_update([{
-    'range': f'A{start}',
-    'values': product_data,
-}])
+# businessDevSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': bd_data,
+# }])
 
-treasurySheet.batch_update([{
-    'range': f'A{start}',
-    'values': treasury_data,
-}])
+# productSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': product_data,
+# }])
 
-creativeSheet.batch_update([{
-    'range': f'A{start}',
-    'values': creative_data,
-}])
+# treasurySheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': treasury_data,
+# }])
 
-developmentSheet.batch_update([{
-    'range': f'A{start}',
-    'values': engineering_data,
-}])
+# creativeSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': creative_data,
+# }])
 
-growthSheet.batch_update([{
-    'range': f'A{start}',
-    'values': growth_data,
-}])
+# developmentSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': engineering_data,
+# }])
 
-expenseSheet.batch_update([{
-    'range': f'A{start}',
-    'values': expenses_data,
-}])
+# growthSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': growth_data,
+# }])
 
-mviSheet.batch_update([{
-    'range': f'A{start}',
-    'values': mvi_data,
-}])
+# expenseSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': expenses_data,
+# }])
 
-analyticsSheet.batch_update([{
-    'range': f'A{start}',
-    'values': analytics_data,
-}])
+# mviSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': mvi_data,
+# }])
 
-peopleOrgSheet.batch_update([{
-    'range': f'A{start}',
-    'values': peopleOrgCom_data,
-}])
+# analyticsSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': analytics_data,
+# }])
 
-intBusinessSheet.batch_update([{
-    'range': f'A{start}',
-    'values': intBusiness_data,
-}])
+# peopleOrgSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': peopleOrgCom_data,
+# }])
 
-metaGovSheet.batch_update([{
-    'range': f'A{start}',
-    'values': metaGov_data,
-}])
+# intBusinessSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': intBusiness_data,
+# }])
 
-otherSheet.batch_update([{
-    'range': f'A{start}',
-    'values': other_data,
-}])
+# metaGovSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': metaGov_data,
+# }])
 
-print(" Updated Master Sheets Complete")
+# otherSheet.batch_update([{
+#     'range': f'A{start}',
+#     'values': other_data,
+# }])
+
+# print(" Updated Master Sheets Complete")
 
 ##################################################################################################################

@@ -1,10 +1,8 @@
 import sqlite3
 
 class Contributor:
-    idCounter = 0
-    def __init__(self, username, walletAddress):
+    def __init__(self, owlId, username, walletAddress):
         self.username = username
         self.walletAddress = walletAddress
-        Contributor.idCounter +=1
-        self.id = Contributor.idCounter
+        self.owlId = owlId
 
