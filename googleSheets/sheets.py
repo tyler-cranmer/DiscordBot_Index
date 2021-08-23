@@ -2,6 +2,8 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from pprint import pprint
 import json
+import sqlite3
+from DB import database
 
 #https://collab-land.gitbook.io/collab-land/bots/discord
 #https://wickbot.com/
@@ -41,171 +43,162 @@ otherSheet = sheet.worksheet("Other")
 ranges = ['A3:F51']
 user_data = contributionSheet1.batch_get(ranges)
 
-# create a new list of lists,  
-bd_data = []
-product_data = []
-treasury_data = []
-creative_data = []
-engineering_data = []
-growth_data = []
-expenses_data = []
-mvi_data = []
-analytics_data = []
-peopleOrgCom_data = []
-intBusiness_data = []
-metaGov_data = []
-other_data = []
+
+functionalGroupSheets = [businessDevSheet, productSheet, treasurySheet, creativeSheet, developmentSheet, growthSheet, expenseSheet, mviSheet, analyticsSheet, peopleOrgSheet, intBusinessSheet, metaGovSheet, otherSheet]
 
 
-global bdCount
-global productCount 
-global treasuryCount 
-global creativeCount 
-global engineeringCount 
-global growthCount
-global expensesCount 
-global mviCount
-global analyticsCount
-global peopleCount
-global instBusinessCount
-global metaGovCount
-global  otherCount
-
-functionalAreas = [bd_data, product_data, treasury_data, creative_data, engineering_data, growth_data, expenses_data, mvi_data, analytics_data, peopleOrgCom_data, intBusiness_data, metaGov_data, other_data]
-
-bdCount = 0
-productCount = 0
-treasuryCount = 0
-creativeCount = 0
-engineeringCount = 0
-growthCount = 0
-expensesCount = 0
-mviCount = 0
-analyticsCount= 0
-peopleCount = 0
-instBusinessCount = 0
-metaGovCount = 0
-otherCount = 0
-
-for lists in user_data: #loops through the data 
-    for contribution in lists:
-        for groupId in contribution:
-            if groupId == 'BD':
-                bd_data.append(contribution)
-                bdCount +=1
-            elif groupId == 'Product':
-                product_data.append(contribution)
-                productCount += 1
-            elif groupId == 'Treasury':
-                treasury_data.append(contribution)
-                treasuryCount +=1
-            elif groupId == 'Creative & Design':
-                creative_data.append(contribution)
-                creativeCount +=1
-            elif groupId == 'Dev/Engineering':
-                engineering_data.append(contribution)
-                engineeringCount +=1
-            elif groupId == 'Growth':
-                growth_data.append(contribution)
-                growthCount +=1
-            elif groupId == 'Expenses':
-                expenses_data.append(contribution)
-                expensesCount +=1
-            elif groupId == 'MVI':
-                mvi_data.append(contribution)
-                mviCount +=1
-            elif groupId == 'Analytics':
-                analytics_data.append(contribution)
-                analyticsCount +=1
-            elif groupId == 'People Org & Community':
-                peopleOrgCom_data.append(contribution)
-                peopleCount +=1
-            elif groupId == 'Institutional Business':
-                intBusiness_data.append(contribution)
-                instBusinessCount +=1
-            elif groupId =='MetaGov':
-                metaGov_data.append(contribution)
-                metaGovCount +=1
-            elif groupId == 'Other':
-                other_data.append(contribution)
-                otherCount +=1
+def getUserData(worksheetName):
+    ranges = ['A3:F51']
+    user_data = worksheetName.batch_get(ranges)
+    return user_data
 
 
-functionalCountList = [bdCount, productCount, treasuryCount, creativeCount, engineeringCount, growthCount, expensesCount, mviCount, analyticsCount, peopleCount, instBusinessCount, metaGovCount, otherCount]
-functionalDataList = [bd_data, product_data, treasury_data, creative_data, engineering_data, growth_data, expenses_data, mvi_data, analytics_data, peopleOrgCom_data, intBusiness_data, metaGov_data, other_data]
+def collectAllOwlIDs(): #collects all the users stored in Sheet2 of Owls and puts them into Contributor TABLE
+    db = 'index_contribution.db'
+    range = ['A2:C136']
+    userInfoD = userInfoSheet.batch_get(range)
+
+    for outershell in userInfoD:
+        for innershell in outershell:
+            database.AddContributor(db, innershell[0], innershell[1], innershell[2])
+
 
 #Updates each Working Groups Mastersheet with the contributors data.
+def updateMasterSheet(dbname):
+    connection = sqlite3.connect(dbname)
+    c = connection.cursor() 
+
+    bd_data = []
+    product_data = []
+    treasury_data = []
+    creative_data = []
+    engineering_data = []
+    growth_data = []
+    expenses_data = []
+    mvi_data = []
+    analytics_data = []
+    peopleOrgCom_data = []
+    intBusiness_data = []
+    metaGov_data = []
+    other_data = []
+    functionalAreas = [bd_data, product_data, treasury_data, creative_data, engineering_data, growth_data, expenses_data, mvi_data, analytics_data, peopleOrgCom_data, intBusiness_data, metaGov_data, other_data]
+
+    c.execute("SELECT * FROM SINGLECONTRIBUTION")
+    l = list(c.fetchall())
+    newlist = list(map(list, l))
+   
+    for lists in newlist:
+        for contribution in lists:
+            if contribution == 'BD':
+                bd_data.append(lists)
+            elif contribution == 'Product':
+                product_data.append(lists)
+            elif contribution == 'Treasury':
+                treasury_data.append(lists)
+            elif contribution == 'Creative & Design':
+                creative_data.append(lists)
+            elif contribution == 'Dev/Engineering':
+                engineering_data.append(lists)
+            elif contribution == 'Growth':
+                growth_data.append(lists)
+            elif contribution == 'Expenses':
+                expenses_data.append(lists)
+            elif contribution == 'MVI':
+                mvi_data.append(lists)
+            elif contribution == 'Analytics':
+                analytics_data.append(lists)
+            elif contribution == 'People Org & Community':
+                peopleOrgCom_data.append(lists)
+            elif contribution == 'Institutional Business':
+                intBusiness_data.append(lists)
+            elif contribution =='MetaGov':
+                metaGov_data.append(lists)
+            elif contribution == 'Other':
+                other_data.append(lists)
+
+    start = 4
+
+    businessDevSheet.batch_update([{
+        'range': f'A{start}',
+        'values': bd_data,
+    }])
+
+    productSheet.batch_update([{
+        'range': f'A{start}',
+        'values': product_data,
+    }])
+
+    treasurySheet.batch_update([{
+        'range': f'A{start}',
+        'values': treasury_data,
+    }])
+
+    creativeSheet.batch_update([{
+        'range': f'A{start}',
+        'values': creative_data,
+    }])
+
+    developmentSheet.batch_update([{
+        'range': f'A{start}',
+        'values': engineering_data,
+    }])
+
+    growthSheet.batch_update([{
+        'range': f'A{start}',
+        'values': growth_data,
+    }])
+
+    expenseSheet.batch_update([{
+        'range': f'A{start}',
+        'values': expenses_data,
+    }])
+
+    mviSheet.batch_update([{
+        'range': f'A{start}',
+        'values': mvi_data,
+    }])
+
+    analyticsSheet.batch_update([{
+        'range': f'A{start}',
+        'values': analytics_data,
+    }])
+
+    peopleOrgSheet.batch_update([{
+        'range': f'A{start}',
+        'values': peopleOrgCom_data,
+    }])
+
+    intBusinessSheet.batch_update([{
+        'range': f'A{start}',
+        'values': intBusiness_data,
+    }])
+
+    metaGovSheet.batch_update([{
+        'range': f'A{start}',
+        'values': metaGov_data,
+    }])
+
+    otherSheet.batch_update([{
+        'range': f'A{start}',
+        'values': other_data,
+    }])
+
+    print(" Updated Master Sheets Complete")
 
 
-print(bd_data)
-# start = 4
-# nextLine = 0
 
-# businessDevSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': bd_data,
-# }])
+#Clears last MasterSheet Data
+def clearLastMonthsData():
+    for list in functionalGroupSheets:
+        list.batch_clear(["A4:V115"])
+    print("Clearing Last months data is complete")
 
-# productSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': product_data,
-# }])
 
-# treasurySheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': treasury_data,
-# }])
 
-# creativeSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': creative_data,
-# }])
 
-# developmentSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': engineering_data,
-# }])
+def main():
+    l = getUserData()
+    print(l)
 
-# growthSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': growth_data,
-# }])
-
-# expenseSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': expenses_data,
-# }])
-
-# mviSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': mvi_data,
-# }])
-
-# analyticsSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': analytics_data,
-# }])
-
-# peopleOrgSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': peopleOrgCom_data,
-# }])
-
-# intBusinessSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': intBusiness_data,
-# }])
-
-# metaGovSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': metaGov_data,
-# }])
-
-# otherSheet.batch_update([{
-#     'range': f'A{start}',
-#     'values': other_data,
-# }])
-
-# print(" Updated Master Sheets Complete")
-
-##################################################################################################################
+if __name__ == '__main__':
+    main()

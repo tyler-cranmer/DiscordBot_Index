@@ -3,10 +3,6 @@ import sqlite3
 from pyasn1.type.univ import Null
 from newContributor import Contributor
 
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from pprint import pprint
-import json
 
 
 
@@ -16,7 +12,7 @@ import json
 # ----------   ------------   --------------  
 ################################################################################
 #        SINGLE CONTRIBUTION TABLE
-#  USER_ID    DATE     CONTRIBUTION_INFO   LINKS    OTHER_NOTES  FUNCTIONAL_GROUP 
+#  DATE    USER_ID     CONTRIBUTION_INFO   LINKS    OTHER_NOTES  FUNCTIONAL_GROUP 
 # ---------  --------   -----------------  -------   -----------  ----------------
 ################################################################################
 
@@ -39,6 +35,7 @@ def create(dbname):
     )""")
 
     c.execute("""CREATE TABLE SINGLECONTRIBUTION (
+        DATE TEXT NOT NULL,
         USER_ID TEXT NOT NULL,
         DISCORD_NAME TEXT NOT NULL,
         CONTRIBUTION_INFO TEXT,
@@ -106,6 +103,7 @@ def changeWallet(dbname, userId, walletAddress):
 #
 # PARAMS:
 # dbname - database name (str)
+# DATE - from datetime
 # USER_ID - index ID (int)
 # CONTRIBUTION_INFO - contribution description (str)
 # LINKS - contribution links (str)
@@ -115,138 +113,19 @@ def changeWallet(dbname, userId, walletAddress):
 # INSERT:
 #(dbname, USER_ID, DATE, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, FUNCTIONAL_GROUP) into songle contribution table
 ##
-def AddContribution(dbname, USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, FUNCTIONAL_GROUP):
+
+
+def AddContribution(dbname, DATE, USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, FUNCTIONAL_GROUP):
     connection = sqlite3.connect(dbname)
     c = connection.cursor() 
 
-    c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:id, :discord, :con_info, :link, :notes, :func_group)", {'id': USER_ID, 'discord': DISCORD_NAME, 'con_info': CONTRIBUTION_INFO, 'link': LINKS, 'notes': OTHER_NOTES, 'func_group': FUNCTIONAL_GROUP})
+    c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:date, :id, :discord, :con_info, :link, :notes, :func_group)", {'date': DATE, 'id': USER_ID, 'discord': DISCORD_NAME, 'con_info': CONTRIBUTION_INFO, 'link': LINKS, 'notes': OTHER_NOTES, 'func_group': FUNCTIONAL_GROUP})
     connection.commit()
     connection.close()
 
 
 
 
-def updateMasterSheet(dbname):
-    connection = sqlite3.connect(dbname)
-    c = connection.cursor() 
-    
-    bd_data = []
-    product_data = []
-    treasury_data = []
-    creative_data = []
-    engineering_data = []
-    growth_data = []
-    expenses_data = []
-    mvi_data = []
-    analytics_data = []
-    peopleOrgCom_data = []
-    intBusiness_data = []
-    metaGov_data = []
-    other_data = []
-
-    functionalAreas = [bd_data, product_data, treasury_data, creative_data, engineering_data, growth_data, expenses_data, mvi_data, analytics_data, peopleOrgCom_data, intBusiness_data, metaGov_data, other_data]
-
-    c.execute("SELECT * FROM SINGLECONTRIBUTION")
-    l = list(c.fetchall())
-    newlist = list(map(list, l))
-    for lists in newlist:
-        for contribution in lists:
-            if contribution == 'BD':
-                bd_data.append(lists)
-            elif contribution == 'Product':
-                product_data.append(lists)
-            elif contribution == 'Treasury':
-                treasury_data.append(lists)
-            elif contribution == 'Creative & Design':
-                creative_data.append(lists)
-            elif contribution == 'Dev/Engineering':
-                engineering_data.append(lists)
-            elif contribution == 'Growth':
-                growth_data.append(lists)
-            elif contribution == 'Expenses':
-                expenses_data.append(lists)
-            elif contribution == 'MVI':
-                mvi_data.append(lists)
-            elif contribution == 'Analytics':
-                analytics_data.append(lists)
-            elif contribution == 'People Org & Community':
-                peopleOrgCom_data.append(lists)
-            elif contribution == 'Institutional Business':
-                intBusiness_data.append(lists)
-            elif contribution =='MetaGov':
-                metaGov_data.append(lists)
-            elif contribution == 'Other':
-                other_data.append(lists)
-
-    start = 4
-    nextLine = 0
-
-    businessDevSheet.batch_update([{
-        'range': f'A{start}',
-        'values': bd_data,
-    }])
-
-    productSheet.batch_update([{
-        'range': f'A{start}',
-        'values': product_data,
-    }])
-
-    treasurySheet.batch_update([{
-        'range': f'A{start}',
-        'values': treasury_data,
-    }])
-
-    creativeSheet.batch_update([{
-        'range': f'A{start}',
-        'values': creative_data,
-    }])
-
-    developmentSheet.batch_update([{
-        'range': f'A{start}',
-        'values': engineering_data,
-    }])
-
-    growthSheet.batch_update([{
-        'range': f'A{start}',
-        'values': growth_data,
-    }])
-
-    expenseSheet.batch_update([{
-        'range': f'A{start}',
-        'values': expenses_data,
-    }])
-
-    mviSheet.batch_update([{
-        'range': f'A{start}',
-        'values': mvi_data,
-    }])
-
-    analyticsSheet.batch_update([{
-        'range': f'A{start}',
-        'values': analytics_data,
-    }])
-
-    peopleOrgSheet.batch_update([{
-        'range': f'A{start}',
-        'values': peopleOrgCom_data,
-    }])
-
-    intBusinessSheet.batch_update([{
-        'range': f'A{start}',
-        'values': intBusiness_data,
-    }])
-
-    metaGovSheet.batch_update([{
-        'range': f'A{start}',
-        'values': metaGov_data,
-    }])
-
-    otherSheet.batch_update([{
-        'range': f'A{start}',
-        'values': other_data,
-    }])
-
-    print(" Updated Master Sheets Complete")
 
 # def main():
 #     db = 'index_contribution.db'
@@ -311,13 +190,7 @@ def main():
     # create(db)
 
 
-# def collectAllOwlIDs(): #collects all the users stored in Sheet2 of Owls and puts them into Contributor TABLE
-#     userInfoR = ['A2:C136']
-#     userInfoD = userInfoSheet.batch_get(userInfoR)
 
-#     for outershell in userInfoD:
-#         for innershell in outershell:
-#             AddContributor(db, innershell[0], innershell[1], innershell[2])
 
 
 
@@ -331,125 +204,6 @@ def main():
 #                     if innershell[5] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other':
 #                         AddContribution(db, innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5])
 
-
-
-    bd_data = []
-    product_data = []
-    treasury_data = []
-    creative_data = []
-    engineering_data = []
-    growth_data = []
-    expenses_data = []
-    mvi_data = []
-    analytics_data = []
-    peopleOrgCom_data = []
-    intBusiness_data = []
-    metaGov_data = []
-    other_data = []
-
-    functionalAreas = [bd_data, product_data, treasury_data, creative_data, engineering_data, growth_data, expenses_data, mvi_data, analytics_data, peopleOrgCom_data, intBusiness_data, metaGov_data, other_data]
-
-    c.execute("SELECT * FROM SINGLECONTRIBUTION")
-    l = list(c.fetchall())
-    newlist = list(map(list, l))
-    for lists in newlist:
-        for contribution in lists:
-            if contribution == 'BD':
-                bd_data.append(lists)
-            elif contribution == 'Product':
-                product_data.append(lists)
-            elif contribution == 'Treasury':
-                treasury_data.append(lists)
-            elif contribution == 'Creative & Design':
-                creative_data.append(lists)
-            elif contribution == 'Dev/Engineering':
-                engineering_data.append(lists)
-            elif contribution == 'Growth':
-                growth_data.append(lists)
-            elif contribution == 'Expenses':
-                expenses_data.append(lists)
-            elif contribution == 'MVI':
-                mvi_data.append(lists)
-            elif contribution == 'Analytics':
-                analytics_data.append(lists)
-            elif contribution == 'People Org & Community':
-                peopleOrgCom_data.append(lists)
-            elif contribution == 'Institutional Business':
-                intBusiness_data.append(lists)
-            elif contribution =='MetaGov':
-                metaGov_data.append(lists)
-            elif contribution == 'Other':
-                other_data.append(lists)
-
-    start = 4
-    nextLine = 0
-
-    businessDevSheet.batch_update([{
-        'range': f'A{start}',
-        'values': bd_data,
-    }])
-
-    productSheet.batch_update([{
-        'range': f'A{start}',
-        'values': product_data,
-    }])
-
-    treasurySheet.batch_update([{
-        'range': f'A{start}',
-        'values': treasury_data,
-    }])
-
-    creativeSheet.batch_update([{
-        'range': f'A{start}',
-        'values': creative_data,
-    }])
-
-    developmentSheet.batch_update([{
-        'range': f'A{start}',
-        'values': engineering_data,
-    }])
-
-    growthSheet.batch_update([{
-        'range': f'A{start}',
-        'values': growth_data,
-    }])
-
-    expenseSheet.batch_update([{
-        'range': f'A{start}',
-        'values': expenses_data,
-    }])
-
-    mviSheet.batch_update([{
-        'range': f'A{start}',
-        'values': mvi_data,
-    }])
-
-    analyticsSheet.batch_update([{
-        'range': f'A{start}',
-        'values': analytics_data,
-    }])
-
-    peopleOrgSheet.batch_update([{
-        'range': f'A{start}',
-        'values': peopleOrgCom_data,
-    }])
-
-    intBusinessSheet.batch_update([{
-        'range': f'A{start}',
-        'values': intBusiness_data,
-    }])
-
-    metaGovSheet.batch_update([{
-        'range': f'A{start}',
-        'values': metaGov_data,
-    }])
-
-    otherSheet.batch_update([{
-        'range': f'A{start}',
-        'values': other_data,
-    }])
-
-    print(" Updated Master Sheets Complete")
 
 
 
