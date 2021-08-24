@@ -1,7 +1,5 @@
 import sqlite3
-from newContributor import Contributor
-
-
+from sheets import Contributor
 
 
 ################################################################################
@@ -123,8 +121,6 @@ def AddContribution(dbname, DATE, USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINK
 
 
 
-
-
 # def main():
 #     db = 'index_contribution.db'
 #     connection = sqlite3.connect(db) #database name must end in .db
@@ -148,34 +144,3 @@ def AddContribution(dbname, DATE, USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINK
 #     print(c.fetchall())
 #     c.execute("SELECT * FROM SINGLECONTRIBUTION WHERE USER_ID=:id", {'id': 1} )
 #     print(c.fetchall())
-
-
-
-
-def main():
-
-    db = 'index_contribution.db'
-    create(db)
-    connection = sqlite3.connect(db) #database name must end in .db
-    c = connection.cursor() #cursor
-
-
-
-
-
-
-#     def collectContributorSheet(): #collects info from sheets and puts it in SingleContributor TABLE
-#         ranges = ['A3:F51']
-#         user_data = contributionSheet1.batch_get(ranges)
-
-#         for outershell in user_data:
-#             for innershell in outershell:
-#                 if len(innershell) == 5:
-#                     if innershell[5] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other':
-#                         AddContribution(db, innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5])
-
-
-
-
-if __name__ == '__main__':
-    main()

@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands, tasks
 import json
 import os
+import sqlite3
+
+from .DB.sheets import updateMasterSheet
 
 # from discord.ext import commands
 # from datetime import datetime, time, timedelta
@@ -34,7 +37,7 @@ bot.remove_command('help')
 
 
 if __name__ == '__main__':
-
+    
     @bot.event
     async def on_ready():
         print('Hooty and the bot is ready.')
@@ -42,12 +45,5 @@ if __name__ == '__main__':
         bot.load_extension("cogs.events")
         bot.load_extension("cogs.admin")
 
-
-#dont think ill need this anymore...
-
-#loop through files in directory to load cogs.
-    # for filename in os.listdir("./cogs"):
-    #     if filename.endswith(".py"):
-    #         bot.load_extension(f"cogs.{filename[:-3]}")
 
     bot.run(token)
