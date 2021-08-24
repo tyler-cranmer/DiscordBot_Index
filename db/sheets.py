@@ -1,9 +1,9 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from pprint import pprint
-import json
 import sqlite3
-from DB import database
+from database import AddContributor, AddContribution
+import datetime
 
 #https://collab-land.gitbook.io/collab-land/bots/discord
 #https://wickbot.com/
@@ -47,10 +47,19 @@ user_data = contributionSheet1.batch_get(ranges)
 functionalGroupSheets = [businessDevSheet, productSheet, treasurySheet, creativeSheet, developmentSheet, growthSheet, expenseSheet, mviSheet, analyticsSheet, peopleOrgSheet, intBusinessSheet, metaGovSheet, otherSheet]
 
 
-def getUserData(worksheetName):
+
+def collectContributorSheet(worksheetName): #collects info from sheets and puts it in SingleContributor TABLE
+    db = 'index_contribution.db'
     ranges = ['A3:F51']
     user_data = worksheetName.batch_get(ranges)
-    return user_data
+
+    date = datetime.datetime.now()
+
+    for outershell in user_data:
+        for innershell in outershell:
+            if len(innershell) > 2 and (innershell[5] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other'):
+                    AddContribution(db, date.strftime("%m/%y"), innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5])
+
 
 
 def collectAllOwlIDs(): #collects all the users stored in Sheet2 of Owls and puts them into Contributor TABLE
@@ -60,10 +69,11 @@ def collectAllOwlIDs(): #collects all the users stored in Sheet2 of Owls and put
 
     for outershell in userInfoD:
         for innershell in outershell:
-            database.AddContributor(db, innershell[0], innershell[1], innershell[2])
+           AddContributor(db, innershell[0], innershell[1], innershell[2])
 
 
 #Updates each Working Groups Mastersheet with the contributors data.
+#NEED TO TAKE IN MM/YY to specify what month they want to look at. 
 def updateMasterSheet(dbname):
     connection = sqlite3.connect(dbname)
     c = connection.cursor() 
@@ -83,7 +93,7 @@ def updateMasterSheet(dbname):
     other_data = []
     functionalAreas = [bd_data, product_data, treasury_data, creative_data, engineering_data, growth_data, expenses_data, mvi_data, analytics_data, peopleOrgCom_data, intBusiness_data, metaGov_data, other_data]
 
-    c.execute("SELECT * FROM SINGLECONTRIBUTION")
+    c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, FUNCTIONAL_GROUP FROM SINGLECONTRIBUTION WHERE DATE = '08/21'")
     l = list(c.fetchall())
     newlist = list(map(list, l))
    
@@ -197,8 +207,11 @@ def clearLastMonthsData():
 
 
 def main():
-    l = getUserData()
-    print(l)
+    # collectAllOwlIDs()
+    # collectContributorSheet(contributionSheet2)
+    # updateMasterSheet('index_contribution.db')
+    # clearLastMonthsData()
 
 if __name__ == '__main__':
+
     main()

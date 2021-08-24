@@ -1,6 +1,4 @@
 import sqlite3
-
-from pyasn1.type.univ import Null
 from newContributor import Contributor
 
 
@@ -156,38 +154,10 @@ def AddContribution(dbname, DATE, USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINK
 
 def main():
 
-    scope = [
-    'https://www.googleapis.com/auth/spreadsheets',
-    'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/drive'
-    ]
-
-    credentials = ServiceAccountCredentials.from_json_keyfile_name("sheetCreds.json", scope) #access the json key you downloaded earlier 
-    client = gspread.authorize(credentials) # authenticate the JSON key with gspread
-
-    sheet = client.open("discordTests")  #opens discordTests google sheets
-    contributionSheet1 = sheet.worksheet("Person1")
-    contributionSheet2 = sheet.worksheet("Person2")
-    userInfoSheet = sheet.worksheet("Sheet2")
-    masterSheet = sheet.worksheet("MasterSheet main") #access Sheet1
-    businessDevSheet = sheet.worksheet("BD")
-    productSheet = sheet.worksheet("Product")
-    treasurySheet = sheet.worksheet("Treasury")
-    creativeSheet = sheet.worksheet("Creative")
-    developmentSheet = sheet.worksheet("Dev")
-    growthSheet = sheet.worksheet("Growth")
-    expenseSheet = sheet.worksheet("Expense")
-    mviSheet = sheet.worksheet("MVI")
-    analyticsSheet = sheet.worksheet("Analytics")
-    peopleOrgSheet = sheet.worksheet("PeopleOrg")
-    intBusinessSheet =  sheet.worksheet("Int Business")
-    metaGovSheet = sheet.worksheet("MetaGov")
-    otherSheet = sheet.worksheet("Other")
-
     db = 'index_contribution.db'
+    create(db)
     connection = sqlite3.connect(db) #database name must end in .db
     c = connection.cursor() #cursor
-    # create(db)
 
 
 
