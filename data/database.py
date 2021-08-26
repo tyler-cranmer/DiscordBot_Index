@@ -69,7 +69,7 @@ class DB:
             raise ValueError('Invalid Wallet Address')
         else:
             new_contributor = Contributor(f'{owlId}', f'{discordName}', f'{walletAddress}')
-            c.execute("INSERT INTO CONTRIBUTORS VALUES (:owl_id, :discord_name, :wallet);", {'owl_id': new_contributor.owlId, 'discord_name': new_contributor.username, 'wallet': new_contributor.walletAddress})
+            c.execute("INSERT INTO CONTRIBUTORS VALUES (:owlId, :discord_name, :wallet);", {'owlId': new_contributor.owlId, 'discord_name': new_contributor.discordName, 'wallet': new_contributor.walletAddress})
         
         connection.commit()
         connection.close()
@@ -83,14 +83,14 @@ class DB:
     # userId - index user ID number(int)
     # walletAddress - new wallet address to replace the old address(str)
     ##
-    def changeWallet(dbname, userId, walletAddress):
+    def changeWallet(dbname, owlId, walletAddress):
         connection = sqlite3.connect(dbname) #database name must end in .db
         c = connection.cursor() #cursor
 
         if(walletAddress=="" or not walletAddress[:2] == '0x'):
             raise ValueError('Invalid Wallet Address')
         else:
-            c.execute("UPDATE CONTRIBUTORS SET WALLET_ADDRESS=:new_wallet WHERE USER_ID=:id;", {'new_wallet': walletAddress, 'id': userId})
+            c.execute("UPDATE CONTRIBUTORS SET WALLET_ADDRESS=:new_wallet WHERE USER_ID=:id;", {'new_wallet': walletAddress, 'id': owlId})
         connection.commit()
         connection.close()
 
@@ -113,19 +113,19 @@ class DB:
     ##
 
 
-    def AddContribution(dbname, date, owl_id, discord_name, contribution_info, links, other_notes, hours, functional_group, product):
+    def AddContribution(dbname, date, owlId, discordName, contributionInfo, links, otherNotes, hours, functionalGroup, product):
         connection = sqlite3.connect(dbname)
         c = connection.cursor() 
 
         c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:date, :id, :discord, :con_info, :link, :notes, :time, :func_group, :product_area);", 
             {'date': date, 
-            'id': owl_id, 
-            'discord': discord_name, 
-            'con_info': contribution_info, 
+            'id': owlId, 
+            'discord': discordName, 
+            'con_info': contributionInfo, 
             'link': links, 
-            'notes': other_notes, 
+            'notes': otherNotes, 
             'time': hours, 
-            'func_group': functional_group, 
+            'func_group': functionalGroup, 
             'product_area': product
             })
 
@@ -135,8 +135,8 @@ class DB:
 
 #creates a contributor class
 class Contributor:
-    def __init__(self, owlId, username, walletAddress):
-        self.username = username
+    def __init__(self, owlId, discordName, walletAddress):
+        self.discordName = discordName
         self.walletAddress = walletAddress
         self.owlId = owlId
 

@@ -41,12 +41,6 @@ class Admin(commands.Cog):
         self.bot.load_extension("cogs.events") 
         await ctx.send("Hooty is no longer taking in Contribution submissions.")
 
-    @commands.command(name='updateMaster')
-    @is_owner()
-    async def updateMaster(self, ctx):
-        send = data.MasterControls()
-        send.updateMasterSheet()
-        await ctx.send("MasterSheet is being updated.")
 
     #enable different cogs while bots running 
     # !loadclog classname
@@ -64,6 +58,14 @@ class Admin(commands.Cog):
         self.bot.unload_extension(f"cogs.{cog}") 
         await ctx.send(f"{cog} file has been disabled.")
 
+    #Updates Master Sheet with current months data inside database
+    #!updateMaster
+    @commands.command(name='updateMaster')
+    @is_owner()
+    async def updateMaster(self, ctx):
+        send = data.MasterControls()
+        send.updateMasterSheet()
+        await ctx.send("MasterSheet has been updated.")
 
     #GoogleSheet Commands
     #!Clear
@@ -73,6 +75,15 @@ class Admin(commands.Cog):
         send = data.MasterControls()
         send.clearLastMonthsData()
         await ctx.send("Master Sheet has be cleared")
+
+    #changes wallet address of user in Database
+    #!changeWallet "OwlID" "New Wallet Address"
+    @commands.command(name='changeWallet')    
+    @is_owner()
+    async def changeWallet(self, ctx, arg1, arg2):
+        userInfo = data.MasterControls()
+        userInfo.changeWallet(arg1, arg2)
+        await ctx.send(f'Owl ID: {arg1} wallet address has been changed to {arg2}')
 
 
     #Admin Help Command
@@ -85,14 +96,16 @@ class Admin(commands.Cog):
             description = 'List of commands only for the Administrator',
             colour = discord.Colour.blue()
         )
-
+        
+    
         embed.add_field(name='!activate', value= '- Activates bot for Submissions', inline = False)
         embed.add_field(name='!deactivate', value= '- Dectivates bot for Submissions', inline = False)
         embed.add_field(name='!updateMaster', value= '- Updates Master sheet with current months contribution', inline = False)
-        embed.add_field(name='!adminHelp', value= '- Displays list of Admin controls', inline = False)
+        embed.add_field(name='!changeWallet', value= '- Changes wallet address of user. \n - Command syntax: !changeWallet "owlID" "new wallet address"', inline = False)
+        embed.add_field(name='!clear', value= '- Clears MasterSheet Data', inline = False)
         embed.add_field(name='!loadcog className', value= '- Enables different class functions', inline = False)
         embed.add_field(name='!unloadcog className', value= '- Disables different class functions', inline = False)
-        embed.add_field(name='!clear', value= '- Clears MasterSheet Data', inline = False)
+        embed.add_field(name='!adminHelp', value= '- Displays list of Admin controls', inline = False)
         embed.set_footer(text = 'If there is any problems with the bot, please contact {add contact}')
         
         await ctx.send(embed=embed)
