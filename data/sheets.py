@@ -19,7 +19,7 @@ class UserSheet:
             'https://www.googleapis.com/auth/drive.file',
             'https://www.googleapis.com/auth/drive'
             ]
-        self.credentials = ServiceAccountCredentials.from_json_keyfile_name("sheetCreds.json", self.scope) #access the json key you downloaded earlier 
+        self.credentials = ServiceAccountCredentials.from_json_keyfile_name("gSheetCreds", self.scope) #access the json key you downloaded earlier 
         self.client = gspread.authorize(self.credentials) # authenticate the JSON key with gspread
 
 
@@ -54,7 +54,7 @@ class MasterControls:
         'https://www.googleapis.com/auth/drive'
         ]
 
-        credentials = ServiceAccountCredentials.from_json_keyfile_name("sheetCreds.json", scope) #access the json key you downloaded earlier 
+        credentials = ServiceAccountCredentials.from_json_keyfile_name("gSheetCreds.json", scope) #access the json key you downloaded earlier 
         client = gspread.authorize(credentials) # authenticate the JSON key with gspread
 
         sheet = client.open("discordTests")  #opens discordTests google sheets
