@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import data 
    
 class contributor(commands.Cog):
     def __init__(self, bot):
@@ -7,7 +8,7 @@ class contributor(commands.Cog):
 
     @commands.command(name='submittalForm')
     async def submittalForm(self, ctx):
-        await ctx.send('Please copy and past your information into the contribution form below. \n\nContribution Form: \n1. [Discord Username] \n2. [Working Group Association]\n3. [Contribution sheet link] \n')
+        await ctx.send('Hopefully This Works...')
 
     @commands.command(name='help')
     async def help(self, ctx):

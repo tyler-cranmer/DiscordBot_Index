@@ -1,42 +1,47 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from pprint import pprint
 import sqlite3
-from database import AddContributor, AddContribution
+from data.database import DB
 import datetime
 
 #https://collab-land.gitbook.io/collab-land/bots/discord
 #https://wickbot.com/
 
 class UserSheet:
-    def __init__(self,owlID,sheetName,worksheetName):
+    def __init__(self, owlID, email):
         self.owlID = owlID
-        self.sheetName = sheetName
-        self.worksheetName = worksheetName
-        scope = [
+        self.email = email
+        self.template_id = '1-Ln4lyK3w8iQUroeHPC3MWIOzCentNEj8iffbx2QCf0'
+        self.folder_id = '11NsbfpsPsHOdXAveio7HbZrFuoboKS4D'
+        self.db = 'index_contribution.db'
+        self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
             'https://www.googleapis.com/auth/drive.file',
             'https://www.googleapis.com/auth/drive'
             ]
-        credentials = ServiceAccountCredentials.from_json_keyfile_name("sheetCreds.json", scope) #access the json key you downloaded earlier 
-        client = gspread.authorize(credentials) # authenticate the JSON key with gspread
-        
-        sheet = client.open(sheetName)
-        self.contributionSheet = sheet.worksheet(worksheetName)
-        
-    
+        self.credentials = ServiceAccountCredentials.from_json_keyfile_name("sheetCreds.json", self.scope) #access the json key you downloaded earlier 
+        self.client = gspread.authorize(self.credentials) # authenticate the JSON key with gspread
+
+
+    def create_spread_sheet(self):        
+        self.client.copy(self.template_id, title=self.owlID, copy_permissions=True, folder_id= self.folder_id)
+        new_sheet = self.client.open(str(self.owlID))
+        new_sheet.share(str(self.email), perm_type='user', role='writer')    
+
+
     def collectContributorSheet(self): #collects info from sheets and puts it in SingleContributor TABLE
-        db = 'index_contribution.db'
-        ranges = ['A3:F51']
-        user_data = self.contributionSheet.batch_get(ranges)
+        sheet = self.client.open(str(self.owlID))
+        contributionSheet = sheet.get_worksheet(0)
+        ranges = ['A3:H51']
+        user_data = contributionSheet.batch_get(ranges)
+        db = self.db
 
         date = datetime.datetime.now()
 
         for outershell in user_data:
             for innershell in outershell:
-                if len(innershell) > 2 and (innershell[5] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other'):
-                    AddContribution(db, date.strftime("%m/%y"), innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5])
-
+                if len(innershell) == 8 and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops'):
+                    DB.AddContribution(db, date.strftime("%m/%y"), innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5], innershell[6], innershell[7])
         print("We thank you for all your work and it has been recorded for review.")
 
 
@@ -68,8 +73,10 @@ class MasterControls:
         self.intBusinessSheet =  sheet.worksheet("Int Business")
         self.metaGovSheet = sheet.worksheet("MetaGov")
         self.otherSheet = sheet.worksheet("Other")
+        # self.languageSheet = sheet.worksheet("NAME")
 
 
+        #need to put self.languageSheet in functional group and add to 
         self.functionalGroupSheets = [self.businessDevSheet, self.productSheet, self.treasurySheet, self.creativeSheet, self.developmentSheet, self.growthSheet, self.expenseSheet, self.mviSheet, self.analyticsSheet, self.peopleOrgSheet, self.intBusinessSheet, self.metaGovSheet, self.otherSheet]
 
         
@@ -81,11 +88,11 @@ class MasterControls:
 
         for outershell in userInfoD:
             for innershell in outershell:
-                AddContributor(db, innershell[0], innershell[1], innershell[2])
+                DB.AddContributor(db, innershell[0], innershell[1], innershell[2])
         print("We have collected all the OWl IDs")
         
 
-
+    #should pass in date
     def updateMasterSheet(self): #updates the mastersheet.
         dbname = 'index_contribution.db'
         connection = sqlite3.connect(dbname)
@@ -104,9 +111,11 @@ class MasterControls:
         intBusiness_data = []
         metaGov_data = []
         other_data = []
-       
 
-        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, FUNCTIONAL_GROUP FROM SINGLECONTRIBUTION WHERE DATE = '08/21'")
+        date = datetime.datetime.now()
+       
+        ## needs to pass in date
+        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?);", (date.strftime("%m/%y")))
         l = list(c.fetchall())
         newlist = list(map(list, l))
    
@@ -214,13 +223,3 @@ class MasterControls:
         for list in self.functionalGroupSheets:
             list.batch_clear(["A4:V115"])
         print("Clearing Last months data is complete")
-
-
-
-#creates a contributor class
-class Contributor:
-    def __init__(self, owlId, username, walletAddress):
-        self.username = username
-        self.walletAddress = walletAddress
-        self.owlId = owlId
-

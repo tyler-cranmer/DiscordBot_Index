@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 import json
-# from googleSheets import clearsheets
+import data
+
+
 
 # Opens Json File to check for Admin Id
 with open("./config.json") as f:
@@ -35,9 +37,16 @@ class Admin(commands.Cog):
     @is_owner()
     async def deactivate(self, ctx):
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Closed for Submissions'))
-        self.bot.unload_extension(f"cogs.contributor")
-        self.bot.load_extension(f"cogs.events") 
-        await ctx.send(f"Hooty is no longer taking in Contribution submissions")
+        self.bot.unload_extension("cogs.contributor")
+        self.bot.load_extension("cogs.events") 
+        await ctx.send("Hooty is no longer taking in Contribution submissions.")
+
+    @commands.command(name='updateMaster')
+    @is_owner()
+    async def updateMaster(self, ctx):
+        send = data.MasterControls()
+        send.updateMasterSheet()
+        await ctx.send("MasterSheet is being updated.")
 
     #enable different cogs while bots running 
     # !loadclog classname
@@ -58,11 +67,12 @@ class Admin(commands.Cog):
 
     #GoogleSheet Commands
     #!Clear
-    # @commands.command(name='clear')
-    # @is_owner()
-    # async def clear(self, ctx):
-    #     self.bot.clearsheets.clearLastMonthsData()
-    #     await ctx.send("Master Sheet has be cleared")
+    @commands.command(name='clearMaster')
+    @is_owner()
+    async def clear(self, ctx):
+        send = data.MasterControls()
+        send.clearLastMonthsData()
+        await ctx.send("Master Sheet has be cleared")
 
 
     #Admin Help Command
@@ -78,6 +88,7 @@ class Admin(commands.Cog):
 
         embed.add_field(name='!activate', value= '- Activates bot for Submissions', inline = False)
         embed.add_field(name='!deactivate', value= '- Dectivates bot for Submissions', inline = False)
+        embed.add_field(name='!updateMaster', value= '- Updates Master sheet with current months contribution', inline = False)
         embed.add_field(name='!adminHelp', value= '- Displays list of Admin controls', inline = False)
         embed.add_field(name='!loadcog className', value= '- Enables different class functions', inline = False)
         embed.add_field(name='!unloadcog className', value= '- Disables different class functions', inline = False)

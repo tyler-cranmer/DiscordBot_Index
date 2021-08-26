@@ -3,8 +3,7 @@ from discord.ext import commands, tasks
 import json
 import os
 import sqlite3
-
-from .DB.sheets import updateMasterSheet
+import data 
 
 # from discord.ext import commands
 # from datetime import datetime, time, timedelta
@@ -37,7 +36,19 @@ bot.remove_command('help')
 
 
 if __name__ == '__main__':
-    
+
+    # db = 'index_contribution.db'
+    # data.DB.create(db)
+    # m = data.MasterControls()
+    # m.collectAllOwlIDs()
+
+    # t = data.UserSheet("#007", 'cranmer.tyler@gmail.com')
+    # t.create_spread_sheet()
+    # t.collectContributorSheet()
+
+    # m.updateMasterSheet()
+    # m.clearLastMonthsData()
+
     @bot.event
     async def on_ready():
         print('Hooty and the bot is ready.')
