@@ -52,11 +52,12 @@ class DB:
     #
     # PARAMS
     # dbname - database name (str)
+    # owlId - owlId (str)
     # discordName - discord name (str)
     # walletAddres - user metaMask wallet address(str)
     # 
     # INSERTS:
-    # discordName(str), wallet address(str) and user id(int) 
+    # owlID (str) discordName(str), wallet address(str) and user id(int) 
     ##
     def AddContributor(dbname, owlId, discordName, walletAddress):
         connection = sqlite3.connect(dbname) #database name must end in .db
@@ -101,15 +102,18 @@ class DB:
     #
     # PARAMS:
     # dbname - database name (str)
-    # DATE - from datetime
-    # USER_ID - index ID (int)
-    # CONTRIBUTION_INFO - contribution description (str)
-    # LINKS - contribution links (str)
-    # OTHER_NOTES - additional notes (str)
-    # FUNCTIONAL_GROUP - function group (str)
+    # date - from datetime (str) (mm/yy)
+    # owlId - index ID (int)
+    # discordName - discordName (str)
+    # contributionInfo- contribution description (str)
+    # links - contribution links
+    # otherNotes - additional notes (str)
+    # hours - hours worked (str)
+    # functionGroup - function group (str)
+    # product - product group (str)
     #
     # INSERT:
-    #(dbname, USER_ID, DATE, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, FUNCTIONAL_GROUP) into songle contribution table
+    #(dbname, owlId, DATE, contributionInfo, links, othernotes, hours, functionGroup, product) into songle contribution table
     ##
 
 
