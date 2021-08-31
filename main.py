@@ -37,18 +37,12 @@ bot.remove_command('help')
 
 if __name__ == '__main__':
 
-    db = 'index_contribution.db'
-    data.DB.create(db)
-    m = data.MasterControls()
-    m.collectAllOwlIDs()
+    # db = 'index_contribution.db'
+    # data.DB.create(db)
+    # m = data.MasterControls()
+    # m.collectAllOwlIDs()
 
 
-    # t = data.UserSheet("test123", 'cranmer.tyler@gmail.com')
-    # t.create_spread_sheet()
-    # t.collectContributorSheet()
-
-    # m.updateMasterSheet()
-    # m.clearLastMonthsData()
 
     @bot.event
     async def on_ready():
