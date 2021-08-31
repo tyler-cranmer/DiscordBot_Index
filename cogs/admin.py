@@ -102,7 +102,7 @@ class Admin(commands.Cog):
         embed.add_field(name='!deactivate', value= '- Dectivates bot for Submissions', inline = False)
         embed.add_field(name='!updateMaster', value= '- Updates Master sheet with current months contribution', inline = False)
         embed.add_field(name='!changeWallet', value= '- Changes wallet address of user. \n - Command syntax: !changeWallet "owlID" "new wallet address"', inline = False)
-        embed.add_field(name='!clear', value= '- Clears MasterSheet Data', inline = False)
+        embed.add_field(name='!clearMaster', value= '- Clears MasterSheet Data', inline = False)
         embed.add_field(name='!loadcog className', value= '- Enables different class functions', inline = False)
         embed.add_field(name='!unloadcog className', value= '- Disables different class functions', inline = False)
         embed.add_field(name='!adminHelp', value= '- Displays list of Admin controls', inline = False)
