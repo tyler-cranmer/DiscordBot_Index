@@ -11,8 +11,8 @@ class contributor(commands.Cog):
     @commands.command(name='submitForm')
     async def submitForm(self, ctx, arg):
         index_contributor = data.UserSheet(arg)
-        index_contributor.collectContributorSheet()
-        await ctx.send('Your contributions for this month have been submitted.')
+        submit = index_contributor.collectContributorSheet()
+        await ctx.send(f'You have submitted {submit} contributions. Thank you for all the work you have done this month.')
         
     #creates new contributor sheet
     #!newContributor {discordname} {gmail} needs quotes for " name with spaces "

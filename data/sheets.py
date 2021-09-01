@@ -29,11 +29,13 @@ class UserSheet:
 
         date = datetime.datetime.now()
 
+        count = 0
         for outershell in user_data:
             for innershell in outershell:
                 if len(innershell) >= 7 and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops'):
                     DB.AddContribution(db, date.strftime("%m/%y"), innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5], innershell[6], innershell[7])
-        print("We thank you for all your work and it has been recorded for review.")
+                    count += 1
+        return count
 
 
 class NewUser:

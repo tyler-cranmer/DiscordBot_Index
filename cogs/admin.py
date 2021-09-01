@@ -74,7 +74,7 @@ class Admin(commands.Cog):
     async def clear(self, ctx):
         send = data.MasterControls()
         send.clearLastMonthsData()
-        await ctx.send("Master Sheet has be cleared")
+        await ctx.send("Master Sheet has been cleared.")
 
     #changes wallet address of user in Database
     #!changeWallet "OwlID" "New Wallet Address"
@@ -83,7 +83,7 @@ class Admin(commands.Cog):
     async def changeWallet(self, ctx, arg1, arg2):
         userInfo = data.MasterControls()
         userInfo.changeWallet(arg1, arg2)
-        await ctx.send(f'Owl ID: {arg1} wallet address has been changed to {arg2}')
+        await ctx.send(f'Owl ID: {arg1} wallet address has been changed to {arg2}.')
 
 
     #Admin Help Command
