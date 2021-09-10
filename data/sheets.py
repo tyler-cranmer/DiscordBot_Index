@@ -104,7 +104,7 @@ class MasterControls:
         for outershell in userInfoD:
             for innershell in outershell:
                 DB.AddContributor(db, innershell[0], innershell[1], innershell[2])
-        print("We have collected all the OWl IDs")
+
         
         
     def changeWalletAddress(self, owlId, walletAddress):
@@ -234,11 +234,10 @@ class MasterControls:
             'values': other_data,
         }])
 
-        print("Updated Master Sheets Complete")
 
 
     #Clears last MasterSheet Data
     def clearLastMonthsData(self):
         for list in self.functionalGroupSheets:
             list.batch_clear(["A4:V115"])
-        print("Clearing Last months data is complete")
+
