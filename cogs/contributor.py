@@ -13,6 +13,11 @@ class contributor(commands.Cog):
         index_contributor = data.UserSheet(arg)
         submit = index_contributor.collectContributorSheet()
         await ctx.send(f'You have submitted {submit} contributions. Thank you for all the work you have done this month.')
+
+    @submitForm.error
+    async def submitForm_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send('Command failed. \n Please make sure to type: !submitForm "discord name"')
         
     #creates new contributor sheet
     #!newContributor {discordname} {gmail} needs quotes for " name with spaces "
@@ -22,6 +27,10 @@ class contributor(commands.Cog):
         URL = new_contributor.create_spread_sheet()
         await ctx.send('Your {} contribution sheet as been created. \n Please store this sheet in your GoogleDrive: {}'.format(arg1,URL))
 
+    @newContributor.error
+    async def newContributor_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send('Command failed. \n Please make sure to type: !newContributor "Discord name" "email"')
 
     @commands.command(name='help')
     async def help(self, ctx):
@@ -43,16 +52,6 @@ class contributor(commands.Cog):
     async def on_command_error(self,ctx,error):
         if isinstance(error, commands.CommandError):
             await ctx.send('Command not found. Please type: !help or !adminHelp for a list of all commands.')
-        
-    @newContributor.error
-    async def newContributor_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('Command failed. \n Please make sure to type: !newContributor "Discord name" "email"')
-
-    @submitForm.error
-    async def submitForm_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('Command failed. \n Please make sure to type: !submitForm "discord name"')
 
 
 def setup(bot):
