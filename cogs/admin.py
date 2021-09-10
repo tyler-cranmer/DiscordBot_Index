@@ -120,11 +120,6 @@ class Admin(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('Your account does not have Admin privlages. If you are trying to submit contribution documents, please type !help for a list of commands to assist you. ')
 
-    @commands.Cog.listener()
-    @is_owner()
-    async def on_command_error(self,ctx,error):
-        if isinstance(error, commands.CommandError):
-            await ctx.send('Command not found. Please type: !adminHelp for a list of all commands.')
 
 def setup(bot):
     bot.add_cog(Admin(bot))

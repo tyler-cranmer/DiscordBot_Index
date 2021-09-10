@@ -42,7 +42,7 @@ class contributor(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self,ctx,error):
         if isinstance(error, commands.CommandError):
-            await ctx.send('Command not found. Please type: !help for a list of all commands.')
+            await ctx.send('Command not found. Please type: !help or !adminHelp for a list of all commands.')
         
     @newContributor.error
     async def newContributor_error(self, ctx, error):
