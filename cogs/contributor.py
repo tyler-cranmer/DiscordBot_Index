@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands 
 import data 
    
 class contributor(commands.Cog):
@@ -38,6 +38,22 @@ class contributor(commands.Cog):
         embed.set_footer(text = 'If there is any problems with the bot, please contact {add contact}')
         
         await ctx.send(embed=embed)
+    
+    @commands.Cog.listener()
+    async def on_command_error(self,ctx,error):
+        if isinstance(error, commands.CommandError):
+            await ctx.send('Command not found. Please type: !help for a list of all commands.')
+        
+    @newContributor.error
+    async def newContributor_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send('Command failed. \n Please make sure to type: !newContributor "Discord name" "email"')
+
+    @submitForm.error
+    async def submitForm_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send('Command failed. \n Please make sure to type: !submitForm "discord name"')
+
 
 def setup(bot):
     bot.add_cog(contributor(bot))

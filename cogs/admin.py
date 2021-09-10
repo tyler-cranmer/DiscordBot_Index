@@ -85,6 +85,10 @@ class Admin(commands.Cog):
         userInfo.changeWallet(arg1, arg2)
         await ctx.send(f'Owl ID: {arg1} wallet address has been changed to {arg2}.')
 
+    @changeWallet.error
+    async def changeWallet_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send('Command failed. \n Please make sure to type: !changeWallet "Owl Id" "New Wallet Address"')
 
     #Admin Help Command
     @commands.command(name='adminHelp')
@@ -115,6 +119,12 @@ class Admin(commands.Cog):
     async def adminHelp_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('Your account does not have Admin privlages. If you are trying to submit contribution documents, please type !help for a list of commands to assist you. ')
+
+    @commands.Cog.listener()
+    @is_owner()
+    async def on_command_error(self,ctx,error):
+        if isinstance(error, commands.CommandError):
+            await ctx.send('Command not found. Please type: !adminHelp for a list of all commands.')
 
 def setup(bot):
     bot.add_cog(Admin(bot))
