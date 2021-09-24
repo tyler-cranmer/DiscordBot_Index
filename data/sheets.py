@@ -81,14 +81,16 @@ class MasterControls:
         sheet = client.open("discordTests")  #opens discordTests google sheets
         self.owl_ids = sheet.worksheet("Sheet2")
         self.masterSheet = sheet.worksheet("MasterSheet main") #access Sheet1
-        self.BD = sheet.worksheet("BD")
+        self.buisnessDevSheet = sheet.worksheet("BD")
 
-        
+        contributor_sheet = client.open_by_key(template_creds)
+        self.owl_ids = contributor_sheet.get_worksheet(1)
+
     
     def collectAllOwlIDs(self): #collects all the users stored in Sheet2 of Owls and puts them into Contributor TABLE
         db = 'index_contribution.db'
         range = ['A2:C136']
-        userInfoD = self.userInfoSheet.batch_get(range)
+        userInfoD = self.owl_ids.batch_get(range)
 
         for outershell in userInfoD:
             for innershell in outershell:
@@ -113,36 +115,32 @@ class MasterControls:
         
         l = list(c.fetchall())
         newlist = list(map(list, l))
-        # print(newlist) 
 
         pl = [['OWLID', 'DISCORD HANDLE', 'CONTRIBUTION', 'LINK TO WORK', 'OTHER NOTES', 'TIME CONTRIBUTED', '#FUNCTION AREA', 'PRODUCT']]
 
-        first_name = pl[0][0]
+        first_name = pl[0][0] #used to get the owlid from pl
         
-
         start = 4
+        index = 0
+
     #loop here to keep track of start value.
         for id in newlist:
             if id[0] != first_name:
                 first_name = id[0]
-                print(pl)
-                self.BD.update(f'A{start}:H{start}', pl)
+                self.buisnessDevSheet.update(f'A{start}:H{start}', pl) #used as a place holder for the BLUE Section
                 start += 1
-            else:
-                self.BD.update(f'A{start}:H{start}', newlist)
+                self.buisnessDevSheet.update(f'A{start}:H{start}', [newlist[index]])
+                start += 1
+                index += 1
+            elif id[0] == first_name:
+                self.buisnessDevSheet.update(f'A{start}:H{start}', [newlist[index]])
                 start +=1
+                index +=1
 
-
-
-                # self.BD.batch_update([{
-                #     'range': f'A{start}',
-                #     'values': pl,
-                # }])
-                # start =+1
 
 
 
     #Clears last MasterSheet Data
     def clearLastMonthsData(self):
-        self.BD.batch(["A4:H4"])
+        self.buisnessDevSheet.batch_clear(['A4:H4'])
 

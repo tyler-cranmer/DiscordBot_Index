@@ -36,7 +36,7 @@ bot.remove_command('help')
 
 if __name__ == '__main__':
 
-    db = 'index_contribution.db'
+    # db = 'index_contribution.db'
     # data.DB.create(db)
     # m = data.MasterControls()
     # m.collectAllOwlIDs()
