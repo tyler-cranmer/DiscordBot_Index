@@ -75,7 +75,7 @@ class MasterControls:
         sheet = client.open("discordTests")  #opens discordTests google sheets
         self.userInfoSheet = sheet.worksheet("Sheet2")
         self.masterSheet = sheet.worksheet("MasterSheet main") #access Sheet1
-        self.businessDevSheet = sheet.worksheet("BD")
+        self.businessDevSheet = sheet.worksheet('BD')
         self.productSheet = sheet.worksheet("Product")
         self.treasurySheet = sheet.worksheet("Treasury")
         self.creativeSheet = sheet.worksheet("Creative")
@@ -240,4 +240,5 @@ class MasterControls:
     def clearLastMonthsData(self):
         for list in self.functionalGroupSheets:
             list.batch_clear(["A4:V115"])
+        # self.businessDevSheet.batch_clear(["A4:V115"])
 
