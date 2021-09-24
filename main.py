@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import json
 import os
-import sqlite3
 import data 
 
 # from discord.ext import commands
@@ -38,9 +37,9 @@ bot.remove_command('help')
 if __name__ == '__main__':
 
     db = 'index_contribution.db'
-    data.DB.create(db)
-    m = data.MasterControls()
-    m.collectAllOwlIDs()
+    # data.DB.create(db)
+    # m = data.MasterControls()
+    # m.collectAllOwlIDs()
 
 
 
@@ -50,6 +49,7 @@ if __name__ == '__main__':
         await bot.change_presence(activity= discord.Game(name=f"{prefix} - prefix"))
         bot.load_extension("cogs.events")
         bot.load_extension("cogs.admin")
+        bot.load_extension("cogs.contributor")
 
 
     bot.run(token)

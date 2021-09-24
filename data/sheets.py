@@ -3,9 +3,15 @@ from oauth2client.service_account import ServiceAccountCredentials
 import sqlite3
 from data.database import DB
 import datetime
+import json
 
 #https://collab-land.gitbook.io/collab-land/bots/discord
 #https://wickbot.com/
+
+with open("./config.json") as f:
+    configData = json.load(f)
+
+template_creds = configData["contributor_template"] #file_id for the new-contributor rewards sheet
 
 class UserSheet:
     def __init__(self, discordName):
@@ -42,7 +48,7 @@ class NewUser:
     def __init__(self, discordName, email):
             self.discordName = discordName
             self.email = email
-            self.template_id = '1-Ln4lyK3w8iQUroeHPC3MWIOzCentNEj8iffbx2QCf0'
+            self.template_id = template_creds
             self.folder_id = '11NsbfpsPsHOdXAveio7HbZrFuoboKS4D'
             self.db = 'index_contribution.db'
             self.scope = [
@@ -55,7 +61,7 @@ class NewUser:
 
 
     def create_spread_sheet(self):        
-        self.client.copy(self.template_id, title=self.discordName, copy_permissions=True, folder_id= self.folder_id)
+        self.client.copy(self.template_id, title=self.discordName, copy_permissions=False, folder_id= self.folder_id)
         new_sheet = self.client.open(str(self.discordName))
         new_sheet.share(str(self.email), perm_type='user', role='writer', notify = 'True', email_message='Did you get this?')    
 
@@ -73,26 +79,9 @@ class MasterControls:
         client = gspread.authorize(credentials) # authenticate the JSON key with gspread
 
         sheet = client.open("discordTests")  #opens discordTests google sheets
-        self.userInfoSheet = sheet.worksheet("Sheet2")
+        self.owl_ids = sheet.worksheet("Sheet2")
         self.masterSheet = sheet.worksheet("MasterSheet main") #access Sheet1
-        self.businessDevSheet = sheet.worksheet("BD")
-        self.productSheet = sheet.worksheet("Product")
-        self.treasurySheet = sheet.worksheet("Treasury")
-        self.creativeSheet = sheet.worksheet("Creative")
-        self.developmentSheet = sheet.worksheet("Dev")
-        self.growthSheet = sheet.worksheet("Growth")
-        self.expenseSheet = sheet.worksheet("Expense")
-        self.mviSheet = sheet.worksheet("MVI")
-        self.analyticsSheet = sheet.worksheet("Analytics")
-        self.peopleOrgSheet = sheet.worksheet("PeopleOrg")
-        self.intBusinessSheet =  sheet.worksheet("Int Business")
-        self.metaGovSheet = sheet.worksheet("MetaGov")
-        self.otherSheet = sheet.worksheet("Other")
-        # self.languageSheet = sheet.worksheet("NAME")
-
-
-        #need to put self.languageSheet in functional group and add to 
-        self.functionalGroupSheets = [self.businessDevSheet, self.productSheet, self.treasurySheet, self.creativeSheet, self.developmentSheet, self.growthSheet, self.expenseSheet, self.mviSheet, self.analyticsSheet, self.peopleOrgSheet, self.intBusinessSheet, self.metaGovSheet, self.otherSheet]
+        self.BD = sheet.worksheet("BD")
 
         
     
@@ -118,126 +107,42 @@ class MasterControls:
         connection = sqlite3.connect(dbname)
         c = connection.cursor() 
 
-        bd_data = []
-        product_data = []
-        treasury_data = []
-        creative_data = []
-        engineering_data = []
-        growth_data = []
-        expenses_data = []
-        mvi_data = []
-        analytics_data = []
-        peopleOrgCom_data = []
-        intBusiness_data = []
-        metaGov_data = []
-        other_data = []
-
         date = datetime.datetime.now().strftime("%m/%y")
         
         c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (date,))
         
         l = list(c.fetchall())
         newlist = list(map(list, l))
-        for lists in newlist:
-            for contribution in lists:
-                if contribution == 'BD':
-                    bd_data.append(lists)
-                elif contribution == 'Product':
-                    product_data.append(lists)
-                elif contribution == 'Treasury':
-                    treasury_data.append(lists)
-                elif contribution == 'Creative & Design':
-                    creative_data.append(lists)
-                elif contribution == 'Dev/Engineering':
-                    engineering_data.append(lists)
-                elif contribution == 'Growth':
-                    growth_data.append(lists)
-                elif contribution == 'Expenses':
-                    expenses_data.append(lists)
-                elif contribution == 'MVI':
-                    mvi_data.append(lists)
-                elif contribution == 'Analytics':
-                    analytics_data.append(lists)
-                elif contribution == 'People Org & Community':
-                    peopleOrgCom_data.append(lists)
-                elif contribution == 'Institutional Business':
-                    intBusiness_data.append(lists)
-                elif contribution =='MetaGov':
-                    metaGov_data.append(lists)
-                elif contribution == 'Other':
-                    other_data.append(lists)
+        # print(newlist) 
+
+        pl = [['OWLID', 'DISCORD HANDLE', 'CONTRIBUTION', 'LINK TO WORK', 'OTHER NOTES', 'TIME CONTRIBUTED', '#FUNCTION AREA', 'PRODUCT']]
+
+        first_name = pl[0][0]
+        
 
         start = 4
+    #loop here to keep track of start value.
+        for id in newlist:
+            if id[0] != first_name:
+                first_name = id[0]
+                print(pl)
+                self.BD.update(f'A{start}:H{start}', pl)
+                start += 1
+            else:
+                self.BD.update(f'A{start}:H{start}', newlist)
+                start +=1
 
-        self.businessDevSheet.batch_update([{
-            'range': f'A{start}',
-            'values': bd_data,
-        }])
 
-        self.productSheet.batch_update([{
-            'range': f'A{start}',
-            'values': product_data,
-        }])
 
-        self.treasurySheet.batch_update([{
-            'range': f'A{start}',
-            'values': treasury_data,
-        }])
-
-        self.creativeSheet.batch_update([{
-            'range': f'A{start}',
-            'values': creative_data,
-        }])
-
-        self.developmentSheet.batch_update([{
-            'range': f'A{start}',
-            'values': engineering_data,
-        }])
-
-        self.growthSheet.batch_update([{
-            'range': f'A{start}',
-            'values': growth_data,
-        }])
-
-        self.expenseSheet.batch_update([{
-            'range': f'A{start}',
-            'values': expenses_data,
-        }])
-
-        self.mviSheet.batch_update([{
-            'range': f'A{start}',
-            'values': mvi_data,
-        }])
-
-        self.analyticsSheet.batch_update([{
-            'range': f'A{start}',
-            'values': analytics_data,
-        }])
-
-        self.peopleOrgSheet.batch_update([{
-            'range': f'A{start}',
-            'values': peopleOrgCom_data,
-        }])
-
-        self.intBusinessSheet.batch_update([{
-            'range': f'A{start}',
-            'values': intBusiness_data,
-        }])
-
-        self.metaGovSheet.batch_update([{
-            'range': f'A{start}',
-            'values': metaGov_data,
-        }])
-
-        self.otherSheet.batch_update([{
-            'range': f'A{start}',
-            'values': other_data,
-        }])
+                # self.BD.batch_update([{
+                #     'range': f'A{start}',
+                #     'values': pl,
+                # }])
+                # start =+1
 
 
 
     #Clears last MasterSheet Data
     def clearLastMonthsData(self):
-        for list in self.functionalGroupSheets:
-            list.batch_clear(["A4:V115"])
+        self.BD.batch(["A4:H4"])
 
