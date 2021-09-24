@@ -81,7 +81,7 @@ class MasterControls:
         sheet = client.open("discordTests")  #opens discordTests google sheets
         self.owl_ids = sheet.worksheet("Sheet2")
         self.masterSheet = sheet.worksheet("MasterSheet main") #access Sheet1
-        self.buisnessDevSheet = sheet.worksheet("BD")
+        self.buisnessDevSheet = sheet.get_worksheet(4) 
 
         contributor_sheet = client.open_by_key(template_creds)
         self.owl_ids = contributor_sheet.get_worksheet(1)
@@ -142,5 +142,6 @@ class MasterControls:
 
     #Clears last MasterSheet Data
     def clearLastMonthsData(self):
-        self.buisnessDevSheet.batch_clear(['A4:H4'])
+        range = ['A4:H50']
+        self.buisnessDevSheet.batch_clear(range)
 
