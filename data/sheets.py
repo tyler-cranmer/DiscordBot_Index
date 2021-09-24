@@ -104,7 +104,7 @@ class MasterControls:
 
     #helper function to create name Titles for each candidate
     #controls the font colors
-    def name(self, row_id, owl_id):
+    def title_name(self, row_id, owl_id):
         self.buisnessDevSheet.batch_update([{
             'range': f'A{row_id}',
             'values': [[owl_id]],
@@ -233,28 +233,25 @@ class MasterControls:
         c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (date,))
         
         l = list(c.fetchall())
-        newlist = list(map(list, l))
+        newlist = list(map(list, l)) #hold all the contribution data for the month
 
-        pl = [['OWLID', 'DISCORD HANDLE', 'CONTRIBUTION', 'LINK TO WORK', 'OTHER NOTES', 'TIME CONTRIBUTED', '#FUNCTION AREA', 'PRODUCT']]
-
-        first_name = pl[0][0] #used to get the owlid from pl
+        first_owl = ['0'] #used as a starting point
         
         row_id = 4
         index = 0
 
-    #loop here to keep track of start value.
+    #loops through the newlist to check if the 
         for id in newlist:
-            if id[0] != first_name:
-                first_name = id[0]
-                # self.buisnessDevSheet.update(f'A{row_id}:H{row_id}', pl) #used as a place holder for the BLUE Section
-                self.name(row_id, first_name)
+            if id[0] != first_owl:
+                first_owl = id[0]
+                self.title_name(row_id, first_owl) #creates contributor title for built in functions/formatting
                 row_id += 1
                 self.buisnessDevSheet.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
                 self.buisnessDevSheet.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
                 self.buisnessDevSheet.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
                 row_id += 1
                 index += 1
-            elif id[0] == first_name:
+            elif id[0] == first_owl:
                 self.buisnessDevSheet.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
                 self.buisnessDevSheet.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
                 self.buisnessDevSheet.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
