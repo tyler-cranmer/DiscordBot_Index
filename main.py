@@ -37,8 +37,6 @@ if __name__ == '__main__':
     # m = data.MasterControls()
     # m.collectAllOwlIDs()
 
-
-
     @bot.event
     async def on_ready():
         print('Hooty and the bot is ready.')

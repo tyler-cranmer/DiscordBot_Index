@@ -53,9 +53,6 @@ class UserSheet:
 
 class NewUser:
     def __init__(self):
-            # self.discordName = discordName
-            # self.email = email
-            # self.template_id = template_creds
             self.db = 'index_contribution.db'
             self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
@@ -66,10 +63,7 @@ class NewUser:
             self.client = gspread.authorize(self.credentials) # authenticate the JSON key with gspread
 
 
-    def create_spread_sheet(self):        
-        # self.client.copy(self.template_id, title=self.discordName, copy_permissions=False)
-        # new_sheet = self.client.open(str(self.discordName))
-        # new_sheet.share(str(self.email), perm_type='user', role='writer', notify = 'True', email_message='Did you get this?')    
+    def create_spread_sheet(self):          
         contributor_sheet = self.client.open_by_key(template_creds)
         return contributor_sheet.url
 
