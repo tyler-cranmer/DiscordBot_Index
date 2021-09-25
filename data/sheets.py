@@ -52,11 +52,10 @@ class UserSheet:
 
 
 class NewUser:
-    def __init__(self, discordName, email):
-            self.discordName = discordName
-            self.email = email
-            self.template_id = template_creds
-            self.folder_id = '11NsbfpsPsHOdXAveio7HbZrFuoboKS4D' #maynot need this
+    def __init__(self):
+            # self.discordName = discordName
+            # self.email = email
+            # self.template_id = template_creds
             self.db = 'index_contribution.db'
             self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
@@ -68,11 +67,11 @@ class NewUser:
 
 
     def create_spread_sheet(self):        
-        self.client.copy(self.template_id, title=self.discordName, copy_permissions=False, folder_id= self.folder_id)
-        new_sheet = self.client.open(str(self.discordName))
-        new_sheet.share(str(self.email), perm_type='user', role='writer', notify = 'True', email_message='Did you get this?')    
-
-        return new_sheet.url
+        # self.client.copy(self.template_id, title=self.discordName, copy_permissions=False)
+        # new_sheet = self.client.open(str(self.discordName))
+        # new_sheet.share(str(self.email), perm_type='user', role='writer', notify = 'True', email_message='Did you get this?')    
+        contributor_sheet = self.client.open_by_key(template_creds)
+        return contributor_sheet.url
 
 
 
@@ -104,11 +103,15 @@ class MasterControls:
                 if len(innershell) >= 2:
                     DB.AddContributor(db, innershell[0], innershell[1], innershell[2])
 
+
+
     #change wallet address.    
     #They might want this to connect to google sheets database....    
     def changeWalletAddress(self, owlId, walletAddress): 
         db = 'index_contribution.db'
         DB.changeWallet(db, owlId, walletAddress)
+
+
 
     #helper function to create name Titles for each candidate
     #controls the font colors and functions in cells
@@ -230,6 +233,7 @@ class MasterControls:
             }
         })
 
+
     #helper function that uploads contributor data into cells.
     # row_id = google sheet row number
     # index = number that sells what idex your in with in contribution list
@@ -258,7 +262,7 @@ class MasterControls:
         c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (date,))
         
         l = list(c.fetchall())
-        newlist = list(map(list, l)) #hold all the contribution data for the month
+        newlist = list(map(list, l)) #holds all the contribution data for the month
 
         first_owl = ['holder'] #used as a starting point
 

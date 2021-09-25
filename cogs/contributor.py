@@ -22,10 +22,10 @@ class contributor(commands.Cog):
     #creates new contributor sheet
     #!newContributor {discordname} {gmail} needs quotes for " name with spaces "
     @commands.command(name='newContributor')
-    async def newContributor(self, ctx, arg1, arg2):
-        new_contributor = data.NewUser(arg1, arg2)
+    async def newContributor(self, ctx):
+        new_contributor = data.NewUser()
         URL = new_contributor.create_spread_sheet()
-        await ctx.send('Your {} contribution sheet as been created. \n Please store this sheet in your GoogleDrive: {}'.format(arg1,URL))
+        await ctx.send('Here is the monthly contribution sheet. \n Please make a copy of this google sheet and store in your GoogleDrive: {}'.format(URL))
 
     @newContributor.error
     async def newContributor_error(self, ctx, error):
@@ -40,7 +40,7 @@ class contributor(commands.Cog):
             colour = discord.Colour.purple()
         )
 
-        embed.add_field(name='!newContributor', value= '- Creates new google work sheet. \n - Command syntax: !newContributor "discord name" "Gmail address"', inline = False)
+        embed.add_field(name='!newContributor', value= '- Creates new google work sheet. \n - Command syntax: !newContributor', inline = False)
         embed.add_field(name='!submitForm', value= '- Submits google sheet to database. \n - Command syntax: !submitForm "google sheet url"', inline = False)
         embed.add_field(name='!help', value= '- Brings up list of commands', inline = False)
         embed.add_field(name='!adminHelp (Administrator only)', value= '- Displays list of Admin controls', inline = False)
