@@ -105,6 +105,8 @@ class MasterControls:
 
     #helper function to create name Titles for each candidate
     #controls the font colors and functions in cells
+    #row_id = google sheet row number
+    #owl_id = contributor owl_id
     def title_name(self, row_id, owl_id):
         self.raw_input.batch_update([{
             'range': f'A{row_id}',
@@ -221,10 +223,22 @@ class MasterControls:
             }
         })
 
+    #helper function that uploads contributor data into cells.
+    # row_id = google sheet row number
+    # index = number that sells what idex your in with in contribution list
+    # contributioon_list = SQL select statment in the form of a list
     def update_cells(self,row_id, index, contribution_list):
-        self.raw_input.update(f'A{row_id}:H{row_id}', [contribution_list[index]]) 
-        self.raw_input.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False)
-        self.raw_input.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False)
+        self.raw_input.batch_update([{
+            'range': f'A{row_id}:H{row_id}',
+            'values': [contribution_list[index]],
+        },{
+           'range': f'W{row_id}',
+            'values': [[f'=SUM(I{row_id}:V{row_id})']], 
+        },{
+            'range': f'Z{row_id}',
+            'values': [[f'=(W{row_id}/$B$1)']],
+        }], value_input_option = 'USER_ENTERED')
+    
 
     #should pass in date
     def updateMasterSheet(self): #updates the mastersheet.
@@ -239,27 +253,23 @@ class MasterControls:
         l = list(c.fetchall())
         newlist = list(map(list, l)) #hold all the contribution data for the month
 
-        first_owl = ['hi'] #used as a starting point
-        
+        first_owl = ['holder'] #used as a starting point
 
         row_id = 4
-        index = 0
-        for id in newlist:
-            if id[0] != first_owl:
-                first_owl = id[0]
-                self.title_name(row_id, first_owl)
+
+    # updates master sheet with title_name and contributor info
+        for index in range(len(newlist)):
+            ids = newlist[index][0]
+            if ids != first_owl:
+                first_owl = ids
+                self.title_name(row_id,ids)
                 row_id +=1
                 self.update_cells(row_id, index, newlist)
                 row_id +=1
-                index +=1
-            elif id[0] == first_owl:
-                self.update_cells(row_id, index, newlist)
-                row_id +=1
-                index +=1
             else:
                 self.update_cells(row_id, index, newlist)
                 row_id +=1
-                index +=1
+
 
 
 
