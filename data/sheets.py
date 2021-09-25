@@ -4,8 +4,6 @@ import sqlite3
 from data.database import DB
 import datetime
 import json
-import pprint
-
 
 
 with open("./config.json") as f:
@@ -16,9 +14,12 @@ master_creds = configData["Master_key"]
 owl_sheet_creds = configData['Master_owlID_id']
 raw_input_creds = configData['Raw_input_id']
 
+
+
+
 class UserSheet:
-    def __init__(self, discordName):
-        self.discordName = discordName
+    def __init__(self, url):
+        self.url = url
         self.db = 'index_contribution.db'
         self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
@@ -29,8 +30,9 @@ class UserSheet:
         self.client = gspread.authorize(self.credentials) # authenticate the JSON key with gspread
 
 
-    def collectContributorSheet(self): #collects info from sheets and puts it in SingleContributor TABLE
-        sheet = self.client.open(str(self.discordName))
+    #collects info from sheets and puts it in SingleContributor TABLE
+    def collectContributorSheet(self): 
+        sheet = self.client.open_by_url(str(self.url))
         contributionSheet = sheet.get_worksheet(0)
         ranges = ['A3:H51']
         user_data = contributionSheet.batch_get(ranges)
@@ -45,6 +47,8 @@ class UserSheet:
                     DB.AddContribution(db, date.strftime("%m/%y"), innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5], innershell[6], innershell[7])
                     count += 1
         return count
+
+
 
 
 class NewUser:
@@ -69,6 +73,9 @@ class NewUser:
         new_sheet.share(str(self.email), perm_type='user', role='writer', notify = 'True', email_message='Did you get this?')    
 
         return new_sheet.url
+
+
+
 
 class MasterControls:
     def __init__(self):
@@ -269,9 +276,6 @@ class MasterControls:
             else:
                 self.update_cells(row_id, index, newlist)
                 row_id +=1
-
-
-
 
 
     #Clears last MasterSheet Data

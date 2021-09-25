@@ -2,11 +2,7 @@ import discord
 from discord.ext import commands
 import json
 import os
-import data 
 
-# from discord.ext import commands
-# from datetime import datetime, time, timedelta
-# import asyncio
 
 # Check to see if the path exists in the config file. 
 if os.path.exists(os.getcwd() + "/config.json"):

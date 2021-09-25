@@ -40,8 +40,8 @@ class contributor(commands.Cog):
             colour = discord.Colour.purple()
         )
 
-        embed.add_field(name='!newContributor', value= '- Creates new google work sheet. \n - Command syntax: !newContributor "discord name" "email address"', inline = False)
-        embed.add_field(name='!submitForm', value= '- Submits google sheet to database. \n - Command syntax: !submitForm "discord name"', inline = False)
+        embed.add_field(name='!newContributor', value= '- Creates new google work sheet. \n - Command syntax: !newContributor "discord name" "Gmail address"', inline = False)
+        embed.add_field(name='!submitForm', value= '- Submits google sheet to database. \n - Command syntax: !submitForm "google sheet url"', inline = False)
         embed.add_field(name='!help', value= '- Brings up list of commands', inline = False)
         embed.add_field(name='!adminHelp (Administrator only)', value= '- Displays list of Admin controls', inline = False)
         embed.set_footer(text = 'If there is any problems with the bot, please contact {add contact}')
