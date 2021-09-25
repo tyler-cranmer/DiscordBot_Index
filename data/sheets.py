@@ -274,39 +274,10 @@ class MasterControls:
 
 
 
-
-    #loops through the newlist to check if the 
-        # for id in newlist:
-        #     if id[0] != first_owl:
-        #         first_owl = id[0]
-        #         self.title_name(row_id, first_owl) #creates contributor title for built in functions/formatting
-        #         row_id += 1
-        #         self.raw_input.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
-        #         self.raw_input.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
-        #         self.raw_input.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
-        #         row_id += 1
-        #         index += 1
-        #     elif id[0] == first_owl:
-        #         self.raw_input.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
-        #         self.raw_input.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
-        #         self.raw_input.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
-        #         row_id +=1
-        #         index +=1
-        #     else:
-        #         self.raw_input.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
-        #         self.raw_input.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
-        #         self.raw_input.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
-        #         row_id +=1
-        #         index +=1
-        
-
-
-
     #Clears last MasterSheet Data
     #Resets sheet format
     def clearLastMonthsData(self):
         range = ['A4:Z1500']
-        self.raw_input.batch_clear(range)
         self.raw_input.format("A4:Z1500", {
             "backgroundColor": {
             "red": 1.0,
@@ -324,4 +295,5 @@ class MasterControls:
                 "bold": False
             } 
         })
+        self.raw_input.batch_clear(range)
 
