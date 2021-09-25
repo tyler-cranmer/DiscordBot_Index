@@ -4,14 +4,17 @@ import sqlite3
 from data.database import DB
 import datetime
 import json
+import pprint
 
-#https://collab-land.gitbook.io/collab-land/bots/discord
-#https://wickbot.com/
+
 
 with open("./config.json") as f:
     configData = json.load(f)
 
-template_creds = configData["contributor_template"] #file_id for the new-contributor rewards sheet
+template_creds = configData["Contributor_key"] #file_id for the new-contributor rewards sheet
+master_creds = configData["Master_key"]
+owl_sheet_creds = configData['Master_owlID_id']
+raw_input_creds = configData['Raw_input_id']
 
 class UserSheet:
     def __init__(self, discordName):
@@ -49,7 +52,7 @@ class NewUser:
             self.discordName = discordName
             self.email = email
             self.template_id = template_creds
-            self.folder_id = '11NsbfpsPsHOdXAveio7HbZrFuoboKS4D'
+            self.folder_id = '11NsbfpsPsHOdXAveio7HbZrFuoboKS4D' #maynot need this
             self.db = 'index_contribution.db'
             self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
@@ -78,34 +81,32 @@ class MasterControls:
         credentials = ServiceAccountCredentials.from_json_keyfile_name("gSheetCreds.json", scope) #access the json key you downloaded earlier 
         client = gspread.authorize(credentials) # authenticate the JSON key with gspread
 
-        sheet = client.open("discordTests")  #opens discordTests google sheets
-        self.owl_ids = sheet.worksheet("Sheet2")
-        self.masterSheet = sheet.worksheet("MasterSheet main") #access Sheet1
-        self.buisnessDevSheet = sheet.get_worksheet_by_id(463334884) 
+        sheet = client.open_by_key(master_creds)  #connects with mastersheet
+        self.raw_input = sheet.get_worksheet_by_id(raw_input_creds) #connects with raw input sheet
+        self.owl_ids = sheet.get_worksheet_by_id(owl_sheet_creds) #connects with owl id reference worksheet
 
-        contributor_sheet = client.open_by_key(template_creds)
-        self.owl_ids = contributor_sheet.get_worksheet(1)
 
-    
-    def collectAllOwlIDs(self): #collects all the users stored in Sheet2 of Owls and puts them into Contributor TABLE
+    #collects all the users info stored in Owl ID reference worksheet and puts them into Contributor TABLE
+    def collectAllOwlIDs(self): 
         db = 'index_contribution.db'
-        range = ['A2:C136']
-        userInfoD = self.owl_ids.batch_get(range)
+        range = ['A2:C300']
+        userInfo = self.owl_ids.batch_get(range)
 
-        for outershell in userInfoD:
+        for outershell in userInfo:
             for innershell in outershell:
-                DB.AddContributor(db, innershell[0], innershell[1], innershell[2])
+                if len(innershell) >= 2:
+                    DB.AddContributor(db, innershell[0], innershell[1], innershell[2])
 
-        
-        
-    def changeWalletAddress(self, owlId, walletAddress):
+    #change wallet address.    
+    #They might want this to connect to google sheets database....    
+    def changeWalletAddress(self, owlId, walletAddress): 
         db = 'index_contribution.db'
         DB.changeWallet(db, owlId, walletAddress)
 
     #helper function to create name Titles for each candidate
-    #controls the font colors
+    #controls the font colors and functions in cells
     def title_name(self, row_id, owl_id):
-        self.buisnessDevSheet.batch_update([{
+        self.raw_input.batch_update([{
             'range': f'A{row_id}',
             'values': [[owl_id]],
         },{
@@ -166,7 +167,7 @@ class MasterControls:
 
 
         #Format the first A-B Cells
-        self.buisnessDevSheet.format(f'A{row_id}:B{row_id}', {
+        self.raw_input.format(f'A{row_id}:B{row_id}', {
             "backgroundColor": {
             "red": 1.0,
             "green": 0.0,
@@ -184,7 +185,7 @@ class MasterControls:
             }
         })
         #Format for C-H cells
-        self.buisnessDevSheet.format(f'C{row_id}:H{row_id}', {
+        self.raw_input.format(f'C{row_id}:H{row_id}', {
                 "backgroundColor": {
                 "red": 0.15,
                 "green": 0.0,
@@ -202,7 +203,7 @@ class MasterControls:
                 }
         }) 
         #Format for I-Z cells
-        self.buisnessDevSheet.format(f'I{row_id}:Z{row_id}', {
+        self.raw_input.format(f'I{row_id}:Z{row_id}', {
             "backgroundColor": {
             "red": 0.15,
             "green": 0.0,
@@ -220,7 +221,10 @@ class MasterControls:
             }
         })
 
-
+    def update_cells(self,row_id, index, contribution_list):
+        self.raw_input.update(f'A{row_id}:H{row_id}', [contribution_list[index]]) 
+        self.raw_input.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False)
+        self.raw_input.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False)
 
     #should pass in date
     def updateMasterSheet(self): #updates the mastersheet.
@@ -235,45 +239,79 @@ class MasterControls:
         l = list(c.fetchall())
         newlist = list(map(list, l)) #hold all the contribution data for the month
 
-        first_owl = ['0'] #used as a starting point
+        first_owl = ['hi'] #used as a starting point
         
+
         row_id = 4
         index = 0
-
-    #loops through the newlist to check if the 
         for id in newlist:
             if id[0] != first_owl:
                 first_owl = id[0]
-                self.title_name(row_id, first_owl) #creates contributor title for built in functions/formatting
-                row_id += 1
-                self.buisnessDevSheet.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
-                self.buisnessDevSheet.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
-                self.buisnessDevSheet.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
-                row_id += 1
-                index += 1
+                self.title_name(row_id, first_owl)
+                row_id +=1
+                self.update_cells(row_id, index, newlist)
+                row_id +=1
+                index +=1
             elif id[0] == first_owl:
-                self.buisnessDevSheet.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
-                self.buisnessDevSheet.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
-                self.buisnessDevSheet.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
+                self.update_cells(row_id, index, newlist)
                 row_id +=1
                 index +=1
             else:
-                self.buisnessDevSheet.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
-                self.buisnessDevSheet.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
-                self.buisnessDevSheet.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
+                self.update_cells(row_id, index, newlist)
                 row_id +=1
                 index +=1
+
+
+
+
+
+    #loops through the newlist to check if the 
+        # for id in newlist:
+        #     if id[0] != first_owl:
+        #         first_owl = id[0]
+        #         self.title_name(row_id, first_owl) #creates contributor title for built in functions/formatting
+        #         row_id += 1
+        #         self.raw_input.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
+        #         self.raw_input.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
+        #         self.raw_input.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
+        #         row_id += 1
+        #         index += 1
+        #     elif id[0] == first_owl:
+        #         self.raw_input.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
+        #         self.raw_input.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
+        #         self.raw_input.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
+        #         row_id +=1
+        #         index +=1
+        #     else:
+        #         self.raw_input.update(f'A{row_id}:H{row_id}', [newlist[index]]) #updates contribution info from Col A - H
+        #         self.raw_input.update(f'W{row_id}', f'=SUM(I{row_id}:V{row_id})', raw=False) #updates col W cell functions
+        #         self.raw_input.update(f'Z{row_id}', f'=(W{row_id}/$B$1)', raw=False) #updates col Z cell functions
+        #         row_id +=1
+        #         index +=1
+        
 
 
 
     #Clears last MasterSheet Data
+    #Resets sheet format
     def clearLastMonthsData(self):
-        range = ['A4:Z50']
-        self.buisnessDevSheet.batch_clear(range)
-        self.buisnessDevSheet.format("A4:Z50", {
+        range = ['A4:Z1500']
+        self.raw_input.batch_clear(range)
+        self.raw_input.format("A4:Z1500", {
             "backgroundColor": {
             "red": 1.0,
             "green": 1.0,
             "blue": 1.0
-        }})
+            }, 
+            "horizontalAlignment": "CENTER",
+            "textFormat": {
+            "foregroundColor": {
+                "red": 0.0,
+                "green": 0.0,
+                "blue": 0.0
+            },
+                "fontSize": 10,
+                "bold": False
+            } 
+        })
 
