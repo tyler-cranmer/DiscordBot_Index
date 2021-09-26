@@ -40,16 +40,27 @@ class UserSheet:
 
         date = datetime.datetime.now()
 
+        #function to check if a google sheet cell is empty. 
+        def is_empty(x):
+            if x == '':
+                return '---'
+            else:
+                return x
+
+
         count = 0
         for outershell in user_data:
             for innershell in outershell:
-                if len(innershell) >= 7 and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops'):
-                    DB.AddContribution(db, date.strftime("%m/%y"), innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5], innershell[6], innershell[7])
-                    count += 1
+                if len(innershell) >= 7 and innershell[2] != '' and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops') :
+                    dash_list = list(map(is_empty, innershell))
+                    DB.AddContribution(db, date.strftime("%m/%y"), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7])
+                    count +=1
+                    print(dash_list)
+
         return count
 
 
-
+# DB.AddContribution(db, date.strftime("%m/%y"), innershell[0], innershell[1], innershell[2], innershell[3], innershell[4], innershell[5], innershell[6], innershell[7])
 
 class NewUser:
     def __init__(self):
@@ -89,13 +100,13 @@ class MasterControls:
     #collects all the users info stored in Owl ID reference worksheet and puts them into Contributor TABLE
     def collectAllOwlIDs(self): 
         db = 'index_contribution.db'
-        range = ['A2:C300']
+        range = ['A2:B165']
         userInfo = self.owl_ids.batch_get(range)
 
         for outershell in userInfo:
             for innershell in outershell:
-                if len(innershell) >= 2:
-                    DB.AddContributor(db, innershell[0], innershell[1], innershell[2])
+                if innershell[0] != '':
+                    DB.AddContributor(db, innershell[0], innershell[1])
 
 
 

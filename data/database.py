@@ -26,9 +26,9 @@ class DB:
         c = connection.cursor() #cursor
         c.execute("""CREATE TABLE CONTRIBUTORS (
             USER_ID TEXT NOT NULL,
-            DISCORD_NAME TEXT NOT NULL,
-            WALLET_ADDRESS TEXT NOT NULL
+            DISCORD_NAME TEXT NOT NULL
         );""")
+                    
 
         c.execute("""CREATE TABLE SINGLECONTRIBUTION (
             DATE TEXT NOT NULL,

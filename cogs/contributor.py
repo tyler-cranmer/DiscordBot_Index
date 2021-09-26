@@ -12,10 +12,13 @@ class contributor(commands.Cog):
     async def submitForm(self, ctx, arg):
         index_contributor = data.UserSheet(arg)
         submit = index_contributor.collectContributorSheet()
-        if submit > 1:
-            await ctx.send(f'You have submitted {submit} contributions. Thank you for all the work you have done this month.')
-        else:
+        if submit == 0:
+            await ctx.send(f'You have submitted {submit} contributions.')
+            await ctx.send(f'If you tried to submit more than {submit} contributions, please make sure to fill every google sheet cell with info for each contribution.  \n\n Please fix google sheet and rerun submission command.')
+        elif submit == 1:
             await ctx.send(f'You have submitted {submit} contribution. Thank you for all the work you have done this month.')
+        else:
+            await ctx.send(f'You have submitted {submit} contributions. Thank you for all the work you have done this month.')
 
     @submitForm.error
     async def submitForm_error(self, ctx, error):
