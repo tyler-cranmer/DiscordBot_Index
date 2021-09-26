@@ -4,6 +4,7 @@ import sqlite3
 from data.database import DB
 import datetime
 import json
+import time
 
 
 with open("./config.json") as f:
@@ -272,7 +273,7 @@ class MasterControls:
         first_owl = ['holder'] #used as a starting point
 
         row_id = 4
-
+        count = 0
     # updates master sheet with title_name and contributor info
         for index in range(len(newlist)):
             ids = newlist[index][0]
@@ -280,11 +281,17 @@ class MasterControls:
                 first_owl = ids
                 self.title_name(row_id,ids)
                 row_id +=1
-                self.update_cells(row_id, index, newlist)
+                # self.update_cells(row_id, index, newlist)
+                print(newlist[index])
+                count +=1
                 row_id +=1
             else:
-                self.update_cells(row_id, index, newlist)
+                # self.update_cells(row_id, index, newlist)
+                print(newlist[index])
                 row_id +=1
+                count +=1
+        print(count)
+        return 0
 
 
     #Clears last MasterSheet Data
