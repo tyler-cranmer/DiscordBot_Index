@@ -264,11 +264,6 @@ class MasterControls:
     #Clears last MasterSheet Data
     #Resets sheet format
     def clearLastMonthsData(self):
-<<<<<<< HEAD
-        for list in self.functionalGroupSheets:
-            list.batch_clear(["A4:V115"])
-        # self.businessDevSheet.batch_clear(["A4:V115"])
-=======
         range = ['A4:Z1500']
         row_id = 4
         self.raw_input.format("A4:Z1500", {
@@ -290,5 +285,4 @@ class MasterControls:
         })
         self.raw_input.batch_clear(range)
 
->>>>>>> sunday
 
