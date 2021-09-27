@@ -118,154 +118,6 @@ class MasterControls:
 
 
 
-    #helper function to create name Titles for each candidate
-    #controls the font colors and functions in cells
-    #row_id = google sheet row number
-    #owl_id = contributor owl_id
-    def title_name(self, row_id, owl_id):
-        self.raw_input.batch_update([{
-            'range': f'A{row_id}',
-            'values': [[owl_id]],
-        },{
-            'range': f'B{row_id}',
-            'values':  [[f"=VLOOKUP(A{row_id},'Owl ID reference'!$A$2:$C$600,2,FALSE)"]],
-        },{
-            'range': f'C{row_id}:H{row_id}',
-            'values': [['Contribution', 'Link to work', 'Other notes', 'Time contributed (Hours)', '#Functional area', 'Product']],
-        },{
-            'range': f'I{row_id}',
-            'values': [[f'=sumifs($I$3:$I$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Treasury")']]
-        },{
-            'range': f'J{row_id}',
-            'values': [[f'=sumifs($J$3:$J$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Product")']]
-        },{
-            'range': f'K{row_id}',
-            'values': [[f'=sumifs(K$3:K$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"BD")']]
-        },{
-            'range': f'L{row_id}',
-            'values': [[f'=sumifs($L$3:$L$1032,$B$3:B$1032,B{row_id},$G$3:$G$1032,"Creative & Design")']]
-        },{
-            'range': f'M{row_id}',
-            'values': [[f'=sumifs($M$3:$M$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Dev/Engineering")']]
-        },{
-            'range': f'N{row_id}',
-            'values': [[f'=sumifs($N$3:$N$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Growth")']]
-        },{
-            'range': f'O{row_id}',
-            'values': [[f'=sumifs(O$3:O$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Expenses")']]
-        },{
-            'range': f'P{row_id}',
-            'values': [[f'=sumifs(P$3:P$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"MVI")']]
-        },{
-            'range': f'Q{row_id}',
-            'values': [[f'=sumifs(Q$3:Q$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Analytics")']]
-        },{
-            'range': f'R{row_id}',
-            'values': [[f'=sumifs(R$3:R$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Institutional Business")']]
-        },{
-            'range': f'S{row_id}',
-            'values': [[f'=sumifs(S$3:S$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"People, Org & Community")']]
-        },{
-            'range': f'T{row_id}',
-            'values': [[f'=sumifs(T$3:T$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"MetaGov")']]
-        },{
-            'range': f'U{row_id}',
-            'values': [[f'=sumifs(U$3:U$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Other")']]
-        },{
-            'range': f'V{row_id}',
-            'values': [[f'=sumifs(V$3:V$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Lang-Ops")']]
-        },{
-            'range': f'W{row_id}',
-            'values': [[f'=sum(I{row_id}:V{row_id})+X{row_id + 1}']]
-        },{
-            'range': f'Z{row_id}',
-            'values': [[f'=(W{row_id}/$B$1)+Y{row_id + 1}']]
-        }], value_input_option = 'USER_ENTERED')
-
-
-        #Format the first A-B Cells
-        self.raw_input.format(f'A{row_id}:B{row_id}', {
-            "backgroundColor": {
-            "red": 1.0,
-            "green": 0.0,
-            "blue": 0.0
-            },
-            "horizontalAlignment": "CENTER",
-            "textFormat": {
-            "foregroundColor": {
-                "red": 1.0,
-                "green": 1.0,
-                "blue": 1.0
-            },
-            "fontSize": 12,
-            "bold": True
-            }
-        })
-        #Format for C-H cells
-        self.raw_input.format(f'C{row_id}:H{row_id}', {
-                "backgroundColor": {
-                "red": 0.15,
-                "green": 0.0,
-                "blue": 0.50
-                },
-                "horizontalAlignment": "CENTER",
-                "textFormat": {
-                "foregroundColor": {
-                    "red": 1.0,
-                    "green": 1.0,
-                    "blue": 1.0
-                },
-                "fontSize": 12,
-                "bold": True
-                }
-        }) 
-        #Format for I-Z cells
-        self.raw_input.format(f'I{row_id}:Z{row_id}', {
-            "backgroundColor": {
-            "red": 0.15,
-            "green": 0.0,
-            "blue": 0.50
-            },
-            "horizontalAlignment": "CENTER",
-            "textFormat": {
-            "foregroundColor": {
-                "red": 1.0,
-                "green": 1.0,
-                "blue": 1.0
-            },
-            "fontSize": 10,
-            "bold": False
-            }
-        })
-
-
-    #helper function that uploads contributor data into cells.
-    # row_id = google sheet row number
-    # index = number that sells what idex your in with in contribution list
-    # contributioon_list = SQL select statment in the form of a list
-    # def update_cells(self,row_id, index, contribution_list):
-    #     self.raw_input.batch_update([{
-    #         'range': f'A{row_id}:H{row_id}',
-    #         'values': [contribution_list[index]],
-    #     },{
-    #        'range': f'W{row_id}',
-    #         'values': [[f'=SUM(I{row_id}:V{row_id})']], 
-    #     },{
-    #         'range': f'Z{row_id}',
-    #         'values': [[f'=(W{row_id}/$B$1)']],
-    #     }], value_input_option = 'USER_ENTERED')
-    
-
-    def update_cells(self,row_id):
-        self.raw_input.batch_update([{
-           'range': f'W{row_id}',
-            'values': [[f'=SUM(I{row_id}:V{row_id})']], 
-        },{
-            'range': f'Z{row_id}',
-            'values': [[f'=(W{row_id}/$B$1)']],
-        }], value_input_option = 'USER_ENTERED')
-
-
     #should pass in date
     def updateMasterSheet(self): #updates the mastersheet.
         dbname = 'index_contribution.db'
@@ -281,7 +133,7 @@ class MasterControls:
 
         row_id = 4
 
-
+        #inserts titles for all each contributor
         def insert_title(owl_id,row_id):
             data = [owl_id, f"=VLOOKUP(A{row_id},'Owl ID reference'!$A$2:$C$600,2,FALSE)", 'Contribution', 'Link to Work', 'Other notes', 'Time contributed (Hours)', '# Functional area', 'Product',
             f'=sumifs($I$3:$I$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Treasury")', f'=sumifs($J$3:$J$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Product")', f'=sumifs(K$3:K$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"BD")',
@@ -345,48 +197,51 @@ class MasterControls:
                 }
             })
 
-       #updates contribution list
+       # Batch updates contribution list
         self.raw_input.batch_update([{
            'range': f'A{row_id}',
             'values': newlist, 
         }])
 
-        # insert formulas
-        # for index in range(len(newlist)):
-        #     self.update_cells(row_id)
-        #     row_id +=1
-       
-    
- 
+        # creates the list of lists for row W and Z formulas
+        wsum = []
+        zsum= []
+        for x in range(len(newlist)):
+            wsum.append(f'=SUM(I{row_id+x}:V{row_id+x})')
+            zsum.append(f'=(W{row_id+x}/$B$1)')
+
+        w_list = [[x] for x in wsum]
+        z_list = [[x] for x in zsum]
+
+        #batch update all forumlas to master sheet
+        self.raw_input.batch_update([{
+           'range': 'W4',
+            'values': w_list, 
+        }, {'range': 'Z4',
+            'values': z_list,
+            }], value_input_option = 'USER_ENTERED')
+
 
         ##### creates the titles for each person #######
-        # first_owl = ['holder'] #used as a starting point
-        # title_number = 4  
-        # for x in range(len(newlist)):
-        #     ids = newlist[x][0]
-        #     if ids != first_owl:
-        #         first_owl = ids
-        #         insert_title(first_owl, title_number)
-        #         title_number +=2
-        #     else:
-        #         title_number +=1
+        first_owl = ['holder'] #used as a starting point
+        title_number = 4  
+        for x in range(len(newlist)):
+            ids = newlist[x][0]
+            if ids != first_owl:
+                first_owl = ids
+                insert_title(first_owl, title_number)
+                title_number +=2
+            else:
+                title_number +=1
         
-        
-
-# might not need this
-        # w_list = [] 
-        # z_list = [] 
-        # count = 0
-        # for x in range(len(self.newlist)):
-            # w_list.append(f'=SUM(I{row_id+x}:V{row_id+x})')
-            # z_list.append(f'=(W{row_id+x}/$B$1)')
-        #     count +=1
+    
 
 
     #Clears last MasterSheet Data
     #Resets sheet format
     def clearLastMonthsData(self):
         range = ['A4:Z1500']
+        row_id = 4
         self.raw_input.format("A4:Z1500", {
             "backgroundColor": {
             "red": 1.0,
@@ -405,4 +260,5 @@ class MasterControls:
             } 
         })
         self.raw_input.batch_clear(range)
+
 
