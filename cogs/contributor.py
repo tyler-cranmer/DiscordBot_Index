@@ -50,7 +50,7 @@ class contributor(commands.Cog):
         embed.add_field(name='!submitForm (google sheet url)', value= '- Submits google sheet to database. \n - Command syntax: !submitForm (google sheet url) with no brackets', inline = False)
         embed.add_field(name='!help', value= '- Brings up list of commands', inline = False)
         embed.add_field(name='!adminHelp (Administrator only)', value= '- Displays list of Admin controls', inline = False)
-        embed.set_footer(text = 'If there is any problems with the bot, please contact {add contact}')
+        embed.set_footer(text = 'If there are any problems with the bot, please DM TeeWhy')
         
         await ctx.send(embed=embed)
     
