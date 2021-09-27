@@ -41,10 +41,10 @@ if __name__ == '__main__':
     @bot.event
     async def on_ready():
         print('Hooty and the bot is ready.')
-        await bot.change_presence(activity= discord.Game(name=f"{prefix}help"))
+        await bot.change_presence(activity= discord.Game(name=f"|{prefix}help"))
         bot.load_extension("cogs.events")
         bot.load_extension("cogs.admin")
-        bot.load_extension("cogs.contributor")
+        # bot.load_extension("cogs.contributor")
 
 
     bot.run(token)

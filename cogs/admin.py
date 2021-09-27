@@ -26,7 +26,7 @@ class Admin(commands.Cog):
     @commands.command(name='activate')
     @is_owner()
     async def activate(self, ctx):
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='for Submissions'))
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='for Submissions| !help'))
         self.bot.unload_extension(f"cogs.events") 
         self.bot.load_extension(f"cogs.contributor")
         await ctx.send(f"Hooty is now taking in Contribution submissions")
