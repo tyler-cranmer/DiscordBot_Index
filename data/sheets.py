@@ -92,33 +92,9 @@ class MasterControls:
         credentials = ServiceAccountCredentials.from_json_keyfile_name("gSheetCreds.json", scope) #access the json key you downloaded earlier 
         client = gspread.authorize(credentials) # authenticate the JSON key with gspread
 
-<<<<<<< HEAD
-        sheet = client.open("discordTests")  #opens discordTests google sheets
-        self.userInfoSheet = sheet.worksheet("Sheet2")
-        self.masterSheet = sheet.worksheet("MasterSheet main") #access Sheet1
-        self.businessDevSheet = sheet.worksheet('BD')
-        self.productSheet = sheet.worksheet("Product")
-        self.treasurySheet = sheet.worksheet("Treasury")
-        self.creativeSheet = sheet.worksheet("Creative")
-        self.developmentSheet = sheet.worksheet("Dev")
-        self.growthSheet = sheet.worksheet("Growth")
-        self.expenseSheet = sheet.worksheet("Expense")
-        self.mviSheet = sheet.worksheet("MVI")
-        self.analyticsSheet = sheet.worksheet("Analytics")
-        self.peopleOrgSheet = sheet.worksheet("PeopleOrg")
-        self.intBusinessSheet =  sheet.worksheet("Int Business")
-        self.metaGovSheet = sheet.worksheet("MetaGov")
-        self.otherSheet = sheet.worksheet("Other")
-        # self.languageSheet = sheet.worksheet("NAME")
-
-
-        #need to put self.languageSheet in functional group and add to 
-        self.functionalGroupSheets = [self.businessDevSheet, self.productSheet, self.treasurySheet, self.creativeSheet, self.developmentSheet, self.growthSheet, self.expenseSheet, self.mviSheet, self.analyticsSheet, self.peopleOrgSheet, self.intBusinessSheet, self.metaGovSheet, self.otherSheet]
-=======
         sheet = client.open_by_key(master_creds)  #connects with mastersheet
         self.raw_input = sheet.get_worksheet_by_id(raw_input_creds) #connects with raw input sheet
         self.owl_ids = sheet.get_worksheet_by_id(owl_sheet_creds) #connects with owl id reference worksheet
->>>>>>> sunday
 
 
     #collects all the users info stored in Owl ID reference worksheet and puts them into Contributor TABLE
