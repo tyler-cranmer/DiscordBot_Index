@@ -26,9 +26,9 @@ class DB:
         c = connection.cursor() #cursor
         c.execute("""CREATE TABLE CONTRIBUTORS (
             USER_ID TEXT NOT NULL,
-            DISCORD_NAME TEXT NOT NULL,
-            WALLET_ADDRESS TEXT NOT NULL
+            DISCORD_NAME TEXT NOT NULL
         );""")
+                    
 
         c.execute("""CREATE TABLE SINGLECONTRIBUTION (
             DATE TEXT NOT NULL,
@@ -66,8 +66,8 @@ class DB:
 
         if(discordName == "" or not isinstance(discordName, str)):
             raise ValueError("Invalid Discord Name")
-        elif(walletAddress== "" or not isinstance(walletAddress, str) or not walletAddress[:2] == '0x'):
-            raise ValueError('Invalid Wallet Address')
+        # elif(walletAddress== "" or not isinstance(walletAddress, str) or not walletAddress[:2] == '0x'):
+        #     raise ValueError('Invalid Wallet Address')
         else:
             new_contributor = Contributor(f'{owlId}', f'{discordName}', f'{walletAddress}')
             c.execute("INSERT INTO CONTRIBUTORS VALUES (:owlId, :discord_name, :wallet);", {'owlId': new_contributor.owlId, 'discord_name': new_contributor.discordName, 'wallet': new_contributor.walletAddress})

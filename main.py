@@ -2,12 +2,8 @@ import discord
 from discord.ext import commands
 import json
 import os
-import sqlite3
-import data 
+import data
 
-# from discord.ext import commands
-# from datetime import datetime, time, timedelta
-# import asyncio
 
 # Check to see if the path exists in the config file. 
 if os.path.exists(os.getcwd() + "/config.json"):
@@ -40,16 +36,21 @@ if __name__ == '__main__':
     # db = 'index_contribution.db'
     # data.DB.create(db)
     # m = data.MasterControls()
+<<<<<<< HEAD
     # m.collectAllOwlIDs()
 
 
+=======
+    # m.collectAllOwlIDs
+>>>>>>> sunday
 
     @bot.event
     async def on_ready():
         print('Hooty and the bot is ready.')
-        await bot.change_presence(activity= discord.Game(name=f"{prefix} - prefix"))
+        await bot.change_presence(activity= discord.Game(name=f"|{prefix}help"))
         bot.load_extension("cogs.events")
         bot.load_extension("cogs.admin")
+        # bot.load_extension("cogs.contributor")
 
 
     bot.run(token)
