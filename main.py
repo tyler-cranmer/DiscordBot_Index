@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import json
 import os
-import data
+import datetime
 
 
 # Check to see if the path exists in the config file. 
@@ -40,11 +40,12 @@ if __name__ == '__main__':
 
     @bot.event
     async def on_ready():
-        print('Hooty and the bot is ready.')
+        date = datetime.datetime.now()
+        print(f'Hooty and the bot is ready. {date}')
         await bot.change_presence(activity= discord.Game(name=f"|{prefix}help"))
-        bot.load_extension("cogs.events")
+        # bot.load_extension("cogs.events")
         bot.load_extension("cogs.admin")
-        # bot.load_extension("cogs.contributor")
+        bot.load_extension("cogs.contributor")
 
 
     bot.run(token)

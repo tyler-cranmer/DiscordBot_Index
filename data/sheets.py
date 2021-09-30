@@ -56,7 +56,7 @@ class UserSheet:
                     dash_list = list(map(is_empty, innershell))
                     DB.AddContribution(db, date.strftime("%m/%y"), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7])
                     count +=1
-                    print(dash_list)
+                    print(f'{dash_list} \n {date}')
 
         return count
 
