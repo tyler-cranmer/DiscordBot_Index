@@ -42,7 +42,7 @@ if __name__ == '__main__':
     async def on_ready():
         date = datetime.datetime.now()
         print(f'Hooty and the bot is ready. {date}')
-        await bot.change_presence(activity= discord.Game(name=f"|{prefix}help"))
+        await bot.change_presence(activity= discord.Game(type=discord.ActivityType.watching, name='for Submissions || !help'))
         # bot.load_extension("cogs.events")
         bot.load_extension("cogs.admin")
         bot.load_extension("cogs.contributor")
