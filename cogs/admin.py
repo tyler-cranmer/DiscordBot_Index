@@ -110,7 +110,7 @@ class Admin(commands.Cog):
         # embed.add_field(name='!loadcog className', value= '- Enables different class functions', inline = False)
         # embed.add_field(name='!unloadcog className', value= '- Disables different class functions', inline = False)z
         embed.add_field(name='!adminHelp', value= '- Displays list of Admin controls', inline = False)
-        embed.set_footer(text = 'If there is any problems with the bot, please contact {add contact}')
+        embed.set_footer(text = 'If there is any problems with the bot, please contact TeeWhy')
         
         await ctx.send(embed=embed)
 
