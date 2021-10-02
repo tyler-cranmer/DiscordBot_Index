@@ -125,13 +125,48 @@ class MasterControls:
         c = connection.cursor() 
 
         date = datetime.datetime.now().strftime("%m/%y")
+        today_date = datetime.date.today()
+        first = today_date.replace(day=1)
+        lastMonth = first - datetime.timedelta(days=1)
         
-        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (date,))
+        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ? OR DATE = ?", (lastMonth.strftime("%m/%y"),date))
         
         l = list(c.fetchall())
-        newlist = list(map(list, l)) #holds all the contribution data for the month
+        l2 = list(map(list, l)) #holds all the contribution data for the month
 
         row_id = 4
+
+
+
+
+        #transforms the the owl id into integers to allow for to sort all the contributions.
+        # This was made because some people forget to submit all data at once, this allows for the master sheet to have continuity between all contributors. 
+        def sort_list(data):
+            for x in range(len(data)):
+                if data[x][0][0:4] == '#owl':
+                    data[x][0] = 73
+                elif data[x][0][0:5] == 'Chase':
+                    data[x][0] = 121
+                elif data[x][0][0:3] == '#00':
+                    data[x][0] = int(data[x][0][3:4])
+                elif data[x][0][0:2] == '#0':
+                    data[x][0] = int(data[x][0][2:4])
+                elif data[x][0][0:1] == '#':
+                    data[x][0] = int(data[x][0][1:4])
+
+       
+            new_data = sorted(data)
+            for x in range(len(new_data)):
+                if new_data[x][0] < 10:
+                    new_data[x][0] = str(new_data[x][0])
+                    new_data[x][0] = '#00' + new_data[x][0] 
+                elif new_data[x][0] < 100:
+                    new_data[x][0] = str(new_data[x][0])
+                    new_data[x][0] = '#0' + new_data[x][0]
+                elif new_data[x][0] < 1000:
+                    new_data[x][0] = str(new_data[x][0])
+                    new_data[x][0] = '#' + new_data[x][0]
+            return new_data
 
         #inserts titles for all each contributor
         def insert_title(owl_id,row_id):
@@ -196,6 +231,9 @@ class MasterControls:
                 "bold": False
                 }
             })
+
+        newlist = sort_list(l2)
+
 
        # Batch updates contribution list
         self.raw_input.batch_update([{
