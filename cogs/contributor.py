@@ -23,7 +23,7 @@ class contributor(commands.Cog):
     @submitForm.error
     async def submitForm_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('Command failed. \n Please make sure to type: !submitForm "discord name"')
+            await ctx.send('Command failed. \n Please make sure to type: !submitForm "url-of-google-sheet"')
         
     #creates new contributor sheet
     #!newContributor {discordname} {gmail} needs quotes for " name with spaces "
@@ -36,7 +36,7 @@ class contributor(commands.Cog):
     @newContributor.error
     async def newContributor_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('Command failed. \n Please make sure to type: !newContributor "Discord name" "email"')
+            await ctx.send('Command failed. \n Please make sure to type: !newContributor')
 
     @commands.command(name='help')
     async def help(self, ctx):

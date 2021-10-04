@@ -7,6 +7,7 @@ import json
 import time
 
 
+
 with open("./config.json") as f:
     configData = json.load(f)
 
@@ -41,7 +42,8 @@ class UserSheet:
 
         date = datetime.datetime.now()
 
-        #function to check if a google sheet cell is empty. 
+        #function to check if a google sheet cell is empty.
+        # fills empty cell with --- 
         def is_empty(x):
             if x == '':
                 return '---'
@@ -137,6 +139,7 @@ class MasterControls:
         row_id = 4
 
 
+    
 
 
         #transforms the the owl id into integers to allow for to sort all the contributions.
@@ -176,7 +179,11 @@ class MasterControls:
             f'=sumifs(O$3:O$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Expenses")', f'=sumifs(P$3:P$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"MVI")', f'=sumifs(Q$3:Q$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Analytics")',
             f'=sumifs(R$3:R$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Institutional Business")', f'=sumifs(S$3:S$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"People, Org & Community")', f'=sumifs(T$3:T$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"MetaGov")',
             f'=sumifs(U$3:U$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Other")', f'=sumifs(V$3:V$1032,$B$3:$B$1032,B{row_id},$G$3:$G$1032,"Lang-Ops")', f'=sum(I{row_id}:V{row_id})+X{row_id + 1}', '', '', f'=(W{row_id}/$B$1)+Y{row_id + 1}']
+
+
             self.raw_input.insert_row(data, index = row_id, value_input_option='USER_ENTERED')
+
+
             #Format the first A-B Cells
             self.raw_input.format(f'A{row_id}:B{row_id}', {
                 "backgroundColor": {
@@ -235,13 +242,15 @@ class MasterControls:
         newlist = sort_list(l2)
 
 
-       # Batch updates contribution list
+       #Batch updates contribution list
         self.raw_input.batch_update([{
            'range': f'A{row_id}',
             'values': newlist, 
         }])
+        time.sleep(60)
 
-        # creates the list of lists for row W and Z formulas
+        # creates the list of lists for row W and Z formulas 
+        # this allows for a batch_update. 
         wsum = []
         zsum= []
         for x in range(len(newlist)):
@@ -259,7 +268,7 @@ class MasterControls:
             'values': z_list,
             }], value_input_option = 'USER_ENTERED')
 
-
+        time.sleep(60)
         ##### creates the titles for each person #######
         first_owl = ['holder'] #used as a starting point
         title_number = 4  
@@ -268,6 +277,7 @@ class MasterControls:
             if ids != first_owl:
                 first_owl = ids
                 insert_title(first_owl, title_number)
+                time.sleep(3)
                 title_number +=2
             else:
                 title_number +=1
@@ -279,7 +289,6 @@ class MasterControls:
     #Resets sheet format
     def clearLastMonthsData(self):
         range = ['A4:Z1500']
-        row_id = 4
         self.raw_input.format("A4:Z1500", {
             "backgroundColor": {
             "red": 1.0,
