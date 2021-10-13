@@ -138,10 +138,6 @@ class MasterControls:
 
         row_id = 4
 
-
-    
-
-
         #transforms the the owl id into integers to allow for to sort all the contributions.
         # This was made because some people forget to submit all data at once, this allows for the master sheet to have continuity between all contributors. 
         def sort_list(data):
