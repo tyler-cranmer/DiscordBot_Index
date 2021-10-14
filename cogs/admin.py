@@ -14,6 +14,9 @@ with open("./config.json") as f:
     configData = json.load(f)
 
 AdminId = configData["Admin"]
+path = configData['Path']
+html_path = configData['html_path']
+path2 = configData['script_path']
 
 #sets the admin owner of the bot.
 def is_owner():
@@ -131,16 +134,18 @@ class Admin(commands.Cog):
     @is_owner()
     async def upload_pdf_file(self, ctx, *args):
         pdf_name = ctx.message.attachments[0].filename.lower()
-        working = '/Users/tylercranmer/Dev/indexcoop.github.io'
+        working = path
         repo = Repo(working)
         assert not repo.bare
-        index_html = '/Users/tylercranmer/Dev/indexcoop.github.io/index.html'
+        index_html = html_path
+
 
         try:
             if not ctx.message.attachments[0].filename.endswith('.pdf'):
                 await ctx.send('The file you provided was NOT recorded. Please make sure to send a the file in a .pdf format. \n \n Example:    DPI_One_Pager.pdf')
                 return
-            else:
+
+            elif ctx.message.attachments[0].filename.startswith('DPI') or ctx.message.attachments[0].filename.startswith('dpi') or ctx.message.attachments[0].filename.startswith('MVI') or ctx.message.attachments[0].filename.startswith('mvi') or ctx.message.attachments[0].filename.startswith('FLI') or ctx.message.attachments[0].filename.startswith('fli'):
 
                 date = datetime.date.today()
                 year = date.strftime("%Y")
@@ -155,7 +160,7 @@ class Admin(commands.Cog):
                         month = calendar[key]
                 
                 #create new folder of the year. 
-                script_path = os.path.realpath('/Users/tylercranmer/Dev/indexcoop.github.io/assets')
+                script_path = os.path.realpath(path2)
                 new_abs_path_year = os.path.join(script_path, year)
                 new_abs_path_month = os.path.join(new_abs_path_year, month)
                 pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
@@ -241,12 +246,17 @@ class Admin(commands.Cog):
 
                         else:
                             print("pdf file path not found")
-
+                return
+            else:
+                await ctx.send('The file you provided was NOT recorded. Formatting Error. \n\n Please rename the start of the file with DPI or MVI or FLI. \n\n Example: \n\n DPI_One_Pager.pdf \n MVI_One_Pager.pdf \n FLI_One_Pager.pdf')
 
         except IndexError:
             await ctx.send('I did not see a file uploaded with the !pdf command. Please drag the pdf file into the chat and type !pdf inside the ADD A COMMENT forum.')
             
-
+    @upload_pdf_file.error
+    async def upload_pdf_file_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send('Command failed. \n Please make sure to type: !pdf and drag pdf file into chat.')
 
 def setup(bot):
     bot.add_cog(Admin(bot))
