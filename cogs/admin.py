@@ -130,18 +130,16 @@ class Admin(commands.Cog):
     @commands.command(name='pdf')    
     @is_owner()
     async def upload_pdf_file(self, ctx, *args):
-        pdf_name = ctx.message.attachments[0].filename
+        pdf_name = ctx.message.attachments[0].filename.lower()
         working = '/Users/tylercranmer/Dev/indexcoop.github.io'
         repo = Repo(working)
         assert not repo.bare
         index_html = '/Users/tylercranmer/Dev/indexcoop.github.io/index.html'
 
-
         try:
             if not ctx.message.attachments[0].filename.endswith('.pdf'):
-                await ctx.send('The file you provided was NOT recorded. Please make sure to send a the file in a .pdf format. \n \n Example:    filename.pdf')
+                await ctx.send('The file you provided was NOT recorded. Please make sure to send a the file in a .pdf format. \n \n Example:    DPI_One_Pager.pdf')
                 return
-
             else:
 
                 date = datetime.date.today()
@@ -160,13 +158,13 @@ class Admin(commands.Cog):
                 script_path = os.path.realpath('/Users/tylercranmer/Dev/indexcoop.github.io/assets')
                 new_abs_path_year = os.path.join(script_path, year)
                 new_abs_path_month = os.path.join(new_abs_path_year, month)
+                pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
+                pdf_file = pdf_file.lower().replace("'", "")
 
 
                 
                 # if both the year and month path exist, insert new pdf into month directory. 
                 if os.path.exists(new_abs_path_month):
-                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
-                    pdf_file = pdf_file.lower().replace("'", "")
                     await ctx.message.attachments[0].save(pdf_file)
 
                     print(f'Current {year} and {month} folder exists. inserted {pdf_name} \n')
@@ -192,8 +190,6 @@ class Admin(commands.Cog):
                 elif os.path.exists(new_abs_path_year) and not os.path.exists(new_abs_path_month):
                     #create new_month folder
                     os.mkdir(new_abs_path_month)
-                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
-                    pdf_file = pdf_file.lower().replace("'", "")
                     await ctx.message.attachments[0].save(pdf_file)
 
 
@@ -224,8 +220,6 @@ class Admin(commands.Cog):
                     #create new year folder
                     os.mkdir(new_abs_path_year)
                     os.mkdir(new_abs_path_month)
-                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
-                    pdf_file = pdf_file.lower().replace("'", "")
                     await ctx.message.attachments[0].save(pdf_file)
 
                     #NEED TO MERGE branch and Commit
