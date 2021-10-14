@@ -161,88 +161,60 @@ class Admin(commands.Cog):
                 new_abs_path_year = os.path.join(script_path, year)
                 new_abs_path_month = os.path.join(new_abs_path_year, month)
 
+
+                
                 # if both the year and month path exist, insert new pdf into month directory. 
                 if os.path.exists(new_abs_path_month):
-                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{ctx.message.attachments[0].filename}')
+                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
                     pdf_file = pdf_file.lower().replace("'", "")
                     await ctx.message.attachments[0].save(pdf_file)
 
-                    print(f'Current {year} and {month} folder exists. inserted {ctx.message.attachments[0].filename} \n')
+                    print(f'Current {year} and {month} folder exists. inserted {pdf_name} \n')
                     
                     if os.path.exists(pdf_file):
-                        html_line = f'<a href="https://raw.githubusercontent.com/IndexCoop/indexcoop.github.io/master/assets/2021/{pdf_name}" target="_blank" class="link-11">Learn <span>More</span></a>'
-                        with fileinput.FileInput(index_html, inplace = True, backup ='.bak') as f:
-                            for line in f:
-                                if 'link-11' in line:
-                                    print(html_line, end = '\n')
-                                else:
-                                    print(line, end='')  
+                        data.Automate.update_html(pdf_name,year,month)
 
-                        # repo.git.add(all=True)
-                        # repo.git.commit(f'add {pdf_name} and uploaded html link')
                     
                     elif not os.path.exists(pdf_file):
                         print("pdf file path was not found. time sleep for 10 sec")
                         time.sleep(10)
                         if os.path.exists(pdf_file):
-                            html_line = f'<a href="https://raw.githubusercontent.com/IndexCoop/indexcoop.github.io/master/assets/2021/{pdf_name}" target="_blank" class="link-11">Learn <span>More</span></a>'
-                            with fileinput.FileInput(index_html, inplace = True, backup ='.bak') as f:
-                                for line in f:
-                                    if 'link-11' in line:
-                                        print(html_line, end = '\n')
-                                    else:
-                                        print(line, end='')  
-                            # repo.git.add(all=True)
-                            # repo.git.commit(f'add {pdf_name} and uploaded html link')
+                            data.Automate.update_html(pdf_name,year,month)
+
                         else:
                             print("pdf file path not found")
 
                     #NEED TO MERGE branch and Commit
 
-                    await ctx.send(f'{ctx.message.attachments[0].filename} has been uploaded to github')
+                    await ctx.send(f'{pdf_name} has been uploaded to github')
 
                 # if year directory exsist but not the month directory, create new month directory and insert new pdf into month path
                 elif os.path.exists(new_abs_path_year) and not os.path.exists(new_abs_path_month):
                     #create new_month folder
                     os.mkdir(new_abs_path_month)
-                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{ctx.message.attachments[0].filename}')
+                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
                     pdf_file = pdf_file.lower().replace("'", "")
                     await ctx.message.attachments[0].save(pdf_file)
 
 
                     #NEED TO MERGE branch and Commit
 
-                    await ctx.send(f'{ctx.message.attachments[0].filename} has been uploaded to github')
+                    await ctx.send(f'{pdf_name} has been uploaded to github')
 
                     #TO DO insert arg into new months folder
-                    print(f'current {year} folder exists. Created a {month} folder and inserted {ctx.message.attachments[0].filename}')
+                    print(f'current {year} folder exists. Created a {month} folder and inserted {pdf_name}')
                     
                     
                     if os.path.exists(pdf_file):
-                        html_line = f'<a href="https://raw.githubusercontent.com/IndexCoop/indexcoop.github.io/master/assets/2021/{pdf_name}" target="_blank" class="link-11">Learn <span>More</span></a>'
-                        with fileinput.FileInput(index_html, inplace = True, backup ='.bak') as f:
-                            for line in f:
-                                if 'link-11' in line:
-                                    print(html_line, end = '\n')
-                                else:
-                                    print(line, end='')  
+                        data.Automate.update_html(pdf_name,year,month)
 
-                        # repo.git.add(all=True)
-                        # repo.git.commit(f'add {pdf_name} and uploaded html link')
                     
                     elif not os.path.exists(pdf_file):
                         print("pdf file path was not found. time sleep for 10 sec")
                         time.sleep(10)
                         if os.path.exists(pdf_file):
-                            html_line = f'<a href="https://raw.githubusercontent.com/IndexCoop/indexcoop.github.io/master/assets/2021/{pdf_name}" target="_blank" class="link-11">Learn <span>More</span></a>'
-                            with fileinput.FileInput(index_html, inplace = True, backup ='.bak') as f:
-                                for line in f:
-                                    if 'link-11' in line:
-                                        print(html_line, end = '\n')
-                                    else:
-                                        print(line, end='')  
-                            # repo.git.add(all=True)
-                            # repo.git.commit(f'add {pdf_name} and uploaded html link')
+                            data.Automate.update_html(pdf_name,year,month)
+
                         else:
                             print("pdf file path not found")                   
 
@@ -252,42 +224,27 @@ class Admin(commands.Cog):
                     #create new year folder
                     os.mkdir(new_abs_path_year)
                     os.mkdir(new_abs_path_month)
-                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{ctx.message.attachments[0].filename}')
+                    pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
                     pdf_file = pdf_file.lower().replace("'", "")
                     await ctx.message.attachments[0].save(pdf_file)
 
                     #NEED TO MERGE branch and Commit
 
-                    await ctx.send(f'{ctx.message.attachments[0].filename} has been uploaded to github')
+                    await ctx.send(f'{pdf_name} has been uploaded to github')
 
                     #TO DO insert arg into new months folder
-                    print(f'created a {year}/{month}folder and inserted {ctx.message.attachments[0].filename}')
+                    print(f'created a {year}/{month}folder and inserted {pdf_name}')
 
                     if os.path.exists(pdf_file):
-                        html_line = f'<a href="https://raw.githubusercontent.com/IndexCoop/indexcoop.github.io/master/assets/2021/{pdf_name}" target="_blank" class="link-11">Learn <span>More</span></a>'
-                        with fileinput.FileInput(index_html, inplace = True, backup ='.bak') as f:
-                            for line in f:
-                                if 'link-11' in line:
-                                    print(html_line, end = '\n')
-                                else:
-                                    print(line, end='')  
+                        data.Automate.update_html(pdf_name,year,month)
 
-                        repo.git.add(all=True)
-                        repo.git.commit(f'add {pdf_name} and uploaded html link')
                     
                     elif not os.path.exists(pdf_file):
                         print("pdf file path was not found. time sleep for 10 sec")
                         time.sleep(10)
                         if os.path.exists(pdf_file):
-                            html_line = f'<a href="https://raw.githubusercontent.com/IndexCoop/indexcoop.github.io/master/assets/2021/{pdf_name}" target="_blank" class="link-11">Learn <span>More</span></a>'
-                            with fileinput.FileInput(index_html, inplace = True, backup ='.bak') as f:
-                                for line in f:
-                                    if 'link-11' in line:
-                                        print(html_line, end = '\n')
-                                    else:
-                                        print(line, end='')  
-                            repo.git.add(all=True)
-                            repo.git.commit(f'add {pdf_name} and uploaded html link')
+                            data.Automate.update_html(pdf_name,year,month)
+
                         else:
                             print("pdf file path not found")
 
