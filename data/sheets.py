@@ -50,17 +50,39 @@ class UserSheet:
             else:
                 return x
 
-
         count = 0
+        row = 2
+        rows = []
         for outershell in user_data:
-            for innershell in outershell:      
-                if len(innershell) >= 7 and innershell[2] != '' and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops') :
-                    dash_list = list(map(is_empty, innershell))
-                    DB.AddContribution(db, date.strftime("%m/%y"), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7])
-                    count +=1
-                    print(f'{dash_list} \n {date}')
+            for innershell in outershell:
+                row +=1  
+                if len(innershell) >= 7 and not (innershell[0].startswith("#0") or innershell[0].startswith("#2")  # Checks to make sure peoples Owl_Id column is formatted correctly.
+                or innershell[0].startswith("#3") or innershell[0].startswith("#4") or innershell[0].startswith("#5") 
+                or innershell[0].startswith("#6") or innershell[0].startswith("#7") or innershell[0].startswith("#8") 
+                or innershell[0].startswith("#9")): 
+                    rows.append(row)
+                    return count, rows
+                    break
+                elif len(innershell) >= 7 and innershell[2] != '' and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops') :
+        #             dash_list = list(map(is_empty, innershell))
+        #             DB.AddContribution(db, date.strftime("%m/%y"), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7])
+        #             print(f'{dash_list} \n {date}')
+                    count+=1
+                    print(innershell)
+        
+        print('###########################')    
+        return count, rows
 
-        return count
+        # count = 0
+        # for outershell in user_data:
+        #     for innershell in outershell:   
+        #         if len(innershell) >= 7 and innershell[2] != '' and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops') :
+        #             dash_list = list(map(is_empty, innershell))
+        #             DB.AddContribution(db, date.strftime("%m/%y"), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7])
+        #             count +=1
+        #             print(f'{dash_list} \n {date}')
+
+        # return count, rows
 
 
 
@@ -243,7 +265,7 @@ class MasterControls:
            'range': f'A{row_id}',
             'values': newlist, 
         }])
-        time.sleep(60)
+        # time.sleep(60)######################################################
 
         # creates the list of lists for row W and Z formulas 
         # this allows for a batch_update. 
@@ -264,7 +286,7 @@ class MasterControls:
             'values': z_list,
             }], value_input_option = 'USER_ENTERED')
 
-        time.sleep(60)
+        #time.sleep(60)######################################################
         ##### creates the titles for each person #######
         first_owl = ['holder'] #used as a starting point
         title_number = 4  

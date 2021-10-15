@@ -12,13 +12,15 @@ class contributor(commands.Cog):
     async def submitForm(self, ctx, arg):
         index_contributor = data.UserSheet(arg)
         submit = index_contributor.collectContributorSheet()
-        if submit == 0:
-            await ctx.send(f'You have submitted {submit} contributions.')
-            await ctx.send(f'If you tried to submit more than {submit} contributions, please make sure to fill every google sheet cell with info for each contribution.  \n\n Please fix google sheet and rerun submission command.')
-        elif submit == 1:
-            await ctx.send(f'You have submitted {submit} contribution. Thank you for all the work you have done this month.')
+        if len(submit[1]) > 0:
+            await ctx.send(f'The formating of Column A of your google sheet is causing an error. Your submission was not recorded. \n Column A, Row: {submit[1][0]} need to be fixed. Please see video on how to properly fill out google sheet.') 
+        elif submit[0] == 0:
+            await ctx.send(f'You have submitted {submit[0]} contributions.')
+            await ctx.send(f'If you tried to submit more than {submit[0]} contributions, please make sure to fill every google sheet cell with info for each contribution.  \n\n Please fix google sheet and rerun submission command.')
+        elif submit[0] == 1:
+            await ctx.send(f'You have submitted {submit[0]} contribution. If you need to submit additional contributions at a later time, please clear your google sheet of the already submitted contributions and fill in the additional work only. Thank you for all the work you have done this month.')
         else:
-            await ctx.send(f'You have submitted {submit} contributions. Thank you for all the work you have done this month.')
+            await ctx.send(f'You have submitted {submit[0]} contributions. If you need to submit additional contributions at a later time, please clear your google sheet of the already submitted contributions and fill in the additional work only. Thank you for all the work you have done this month.')
 
     @submitForm.error
     async def submitForm_error(self, ctx, error):
