@@ -22,7 +22,8 @@ raw_input_creds = configData['Raw_input_id']
 class UserSheet:
     def __init__(self, url):
         self.url = url
-        self.db = 'index_contribution.db'
+        # self.db = 'index_contribution.db'
+        self.db = 'test.db'
         self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
             'https://www.googleapis.com/auth/drive.file',
@@ -84,22 +85,12 @@ class UserSheet:
   
         return count, rows
 
-        # count = 0
-        # for outershell in user_data:
-        #     for innershell in outershell:   
-        #         if len(innershell) >= 7 and innershell[2] != '' and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops') :
-        #             dash_list = list(map(is_empty, innershell))
-        #             DB.AddContribution(db, date.strftime("%m/%y"), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7])
-        #             count +=1
-        #             print(f'{dash_list} \n {date}')
-
-        # return count, rows
-
 
 
 class NewUser:
     def __init__(self):
-            self.db = 'index_contribution.db'
+            # self.db = 'index_contribution.db'
+            self.db = 'test.db'
             self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
             'https://www.googleapis.com/auth/drive.file',
@@ -134,7 +125,8 @@ class MasterControls:
 
     #collects all the users info stored in Owl ID reference worksheet and puts them into Contributor TABLE
     def collectAllOwlIDs(self): 
-        db = 'index_contribution.db'
+        # db = 'index_contribution.db'
+        db = 'test.db'
         range = ['A2:B165']
         userInfo = self.owl_ids.batch_get(range)
 
@@ -148,14 +140,16 @@ class MasterControls:
     #change wallet address.    
     #They might want this to connect to google sheets database....    
     def changeWalletAddress(self, owlId, walletAddress): 
-        db = 'index_contribution.db'
+        # db = 'index_contribution.db'
+        db = 'test.db'
         DB.changeWallet(db, owlId, walletAddress)
 
 
 
     #should pass in date
     def updateMasterSheet(self): #updates the mastersheet.
-        dbname = 'index_contribution.db'
+        # dbname = 'index_contribution.db'
+        dbname = 'test.db'
         connection = sqlite3.connect(dbname)
         c = connection.cursor() 
 
@@ -164,7 +158,7 @@ class MasterControls:
         first = today_date.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         
-        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ? OR DATE = ?", (last_month.strftime("%m/%y"),current_month))
+        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y")))
         
         l = list(c.fetchall())
         l2 = list(map(list, l)) #holds all the contribution data for the month
@@ -175,11 +169,7 @@ class MasterControls:
         # This was made because some people forget to submit all data at once, this allows for the master sheet to have continuity between all contributors. 
         def sort_list(data):
             for x in range(len(data)):
-                if data[x][0][0:4] == '#owl':
-                    data[x][0] = 73
-                elif data[x][0][0:5] == 'Chase':
-                    data[x][0] = 121
-                elif data[x][0][0:3] == '#00':
+                if data[x][0][0:3] == '#00':
                     data[x][0] = int(data[x][0][3:4])
                 elif data[x][0][0:2] == '#0':
                     data[x][0] = int(data[x][0][2:4])

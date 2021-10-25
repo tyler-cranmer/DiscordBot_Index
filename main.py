@@ -3,6 +3,8 @@ from discord.ext import commands
 import json
 import os
 import datetime
+from data.database import DB
+from data.sheets import MasterControls
 
 
 # Check to see if the path exists in the config file. 
@@ -34,8 +36,9 @@ bot.remove_command('help')
 if __name__ == '__main__':
 
     # db = 'index_contribution.db'
-    # data.DB.create(db)
-    # m = data.MasterControls()
+    # db = 'test.db'
+    # DB.create(db)
+    # m = MasterControls()
     # m.collectAllOwlIDs
 
     @bot.event
