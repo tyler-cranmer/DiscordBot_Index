@@ -67,7 +67,7 @@ class UserSheet:
         for outershell in user_data:
             for innershell in outershell:
                 row +=1  
-                if len(innershell) >= 7 and not (innershell[0].startswith("#0") or innershell[0].startswith("#2")  # Checks to make sure peoples Owl_Id column is formatted correctly.
+                if len(innershell) >= 7 and not (innershell[0].startswith("#0") or innershell[0].startswith("#1") or innershell[0].startswith("#2")  # Checks to make sure peoples Owl_Id column is formatted correctly.
                 or innershell[0].startswith("#3") or innershell[0].startswith("#4") or innershell[0].startswith("#5") 
                 or innershell[0].startswith("#6") or innershell[0].startswith("#7") or innershell[0].startswith("#8") 
                 or innershell[0].startswith("#9")): 
