@@ -135,8 +135,6 @@ class MasterControls:
                 if innershell[0] != '':
                     DB.AddContributor(db, innershell[0], innershell[1])
 
-
-
     #change wallet address.    
     #They might want this to connect to google sheets database....    
     def changeWalletAddress(self, owlId, walletAddress): 
@@ -158,8 +156,7 @@ class MasterControls:
         first = today_date.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
         
-        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y")))
-        
+        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),))
         l = list(c.fetchall())
         l2 = list(map(list, l)) #holds all the contribution data for the month
 
