@@ -77,7 +77,7 @@ class UserSheet:
 
         for outershell in user_data:
             for innershell in outershell:            
-                if len(innershell) >= 7 and innershell[2] != '' and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops' or 'Asia Pacific' or 'Woman+Non-Binary' or 'Governance') :
+                if len(innershell) >= 7 and innershell[2] != '' and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops' or 'Asia Pacific' or 'Woman+Non-Binary' or 'Governance' or 'F.Nest') :
                     dash_list = list(map(is_empty, innershell))
                     DB.AddContribution(db, date_sub(datetime.datetime.now()), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7])
                     print(f'{dash_list} \n {date_sub(datetime.datetime.now())}')
