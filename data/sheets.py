@@ -160,7 +160,7 @@ class MasterControls:
         l = list(c.fetchall())
         l2 = list(map(list, l)) #holds all the contribution data for the month
 
-        row_id = 109 # row 4-108 is reserved for main contributors. 
+        row_id = 119 # row 4-108 is reserved for main contributors. 
 
         #transforms the the owl id into integers to allow for to sort all the contributions.
         # This was made because some people forget to submit all data at once, this allows for the master sheet to have continuity between all contributors. 
