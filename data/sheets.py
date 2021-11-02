@@ -271,21 +271,21 @@ class MasterControls:
 
         # creates the list of lists for row W and Z formulas 
         # this allows for a batch_update. 
-        wsum = []
-        zsum= []
+        dollar_sum = []
+        index_sum= []
         for x in range(len(newlist)):
-            wsum.append(f'=SUM(I{row_id+x}:V{row_id+x})')
-            zsum.append(f'=(W{row_id+x}/$B$1)')
+            dollar_sum.append(f'=SUM(I{row_id+x}:V{row_id+x})')
+            index_sum.append(f'=(W{row_id+x}/$B$1)')
 
-        w_list = [[x] for x in wsum]
-        z_list = [[x] for x in zsum]
+        dollar_sum_l = [[x] for x in dollar_sum]
+        index_sum_l = [[x] for x in index_sum]
 
         #batch update all forumlas to master sheet
         self.raw_input.batch_update([{
-           'range': 'W109',
-            'values': w_list, 
-        }, {'range': 'Z109',
-            'values': z_list,
+           'range': 'Z109',
+            'values': dollar_sum_l, 
+        }, {'range': 'AD109',
+            'values': index_sum_l,
             }], value_input_option = 'USER_ENTERED')
 
 
