@@ -240,7 +240,7 @@ class MasterControls:
                     }
             }) 
             #Format for I-Z cells
-            self.raw_input.format(f'K{row_id}:AG{row_id}', {
+            self.raw_input.format(f'K{row_id}:AH{row_id}', {
                 "backgroundColor": {
                 "red": 0.15,
                 "green": 0.0,
@@ -274,7 +274,7 @@ class MasterControls:
         index_sum= []
         for x in range(len(newlist)):
             dollar_sum.append(f'=SUM(K{row_id+x}:AA{row_id+x})')
-            index_sum.append(f'=(W{row_id+x}/$B$1)')
+            index_sum.append(f'=(AB{row_id+x}/$B$1)')
 
         dollar_sum_l = [[x] for x in dollar_sum]
         index_sum_l = [[x] for x in index_sum]
