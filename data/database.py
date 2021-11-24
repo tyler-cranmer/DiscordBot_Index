@@ -35,10 +35,12 @@ class DB:
             USER_ID TEXT NOT NULL,
             DISCORD_NAME TEXT NOT NULL,
             CONTRIBUTION_INFO TEXT,
+            DISCUSSED TEXT,
             LINKS TEXT,
             OTHER_NOTES TEXT,
             HOURS TEXT,
             FUNCTIONAL_GROUP TEXT NOT NULL,
+            WORKING_GROUP_LEAD TEXT,
             PRODUCT TEXT,
             FOREIGN KEY(USER_ID) REFERENCES CONTRIBUTORS(USER_ID)
         );""")
@@ -117,19 +119,21 @@ class DB:
     ##
 
 
-    def AddContribution(dbname, date, owlId, discordName, contributionInfo, links, otherNotes, hours, functionalGroup, product):
+    def AddContribution(dbname, date, owlId, discordName, contributionInfo, discussion, links, otherNotes, hours, functionalGroup, lead_name, product):
         connection = sqlite3.connect(dbname)
         c = connection.cursor() 
 
-        c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:date, :id, :discord, :con_info, :link, :notes, :time, :func_group, :product_area);", 
+        c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:date, :id, :discord, :con_info, :discuss, :link, :notes, :time, :func_group, :wgl, :product_area);", 
             {'date': date, 
             'id': owlId, 
             'discord': discordName, 
             'con_info': contributionInfo, 
+            'discuss': discussion,
             'link': links, 
             'notes': otherNotes, 
             'time': hours, 
-            'func_group': functionalGroup, 
+            'func_group': functionalGroup,
+            'wgl': lead_name, 
             'product_area': product
             })
 

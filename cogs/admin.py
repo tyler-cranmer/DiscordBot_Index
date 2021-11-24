@@ -2,7 +2,7 @@ import data
 import datetime
 import discord
 from discord.ext import commands
-from git import Repo
+# from git import Repo
 import fileinput
 import json
 import os
@@ -130,133 +130,133 @@ class Admin(commands.Cog):
 
     #Command to make a pull request to upload institutional PDFs to https://github.com/IndexCoop/indexcoop.github.io
     #!pdf {file attatchment.pdf}
-    @commands.command(name='pdf')    
-    @is_owner()
-    async def upload_pdf_file(self, ctx, *args):
-        pdf_name = ctx.message.attachments[0].filename.lower()
-        working = path
-        repo = Repo(working)
-        assert not repo.bare
-        index_html = html_path
+    # @commands.command(name='pdf')    
+    # @is_owner()
+    # async def upload_pdf_file(self, ctx, *args):
+    #     pdf_name = ctx.message.attachments[0].filename.lower()
+    #     working = path
+    #     repo = Repo(working)
+    #     assert not repo.bare
+    #     index_html = html_path
 
 
-        try:
-            if not ctx.message.attachments[0].filename.endswith('.pdf'):
-                await ctx.send('The file you provided was NOT recorded. Please make sure to send a the file in a .pdf format. \n \n Example:    DPI_One_Pager.pdf')
-                return
+    #     try:
+    #         if not ctx.message.attachments[0].filename.endswith('.pdf'):
+    #             await ctx.send('The file you provided was NOT recorded. Please make sure to send a the file in a .pdf format. \n \n Example:    DPI_One_Pager.pdf')
+    #             return
 
-            elif ctx.message.attachments[0].filename.startswith('DPI') or ctx.message.attachments[0].filename.startswith('dpi') or ctx.message.attachments[0].filename.startswith('MVI') or ctx.message.attachments[0].filename.startswith('mvi') or ctx.message.attachments[0].filename.startswith('FLI') or ctx.message.attachments[0].filename.startswith('fli'):
+    #         elif ctx.message.attachments[0].filename.startswith('DPI') or ctx.message.attachments[0].filename.startswith('dpi') or ctx.message.attachments[0].filename.startswith('MVI') or ctx.message.attachments[0].filename.startswith('mvi') or ctx.message.attachments[0].filename.startswith('FLI') or ctx.message.attachments[0].filename.startswith('fli'):
 
-                date = datetime.date.today()
-                year = date.strftime("%Y")
-                month = date.strftime("%m")
+    #             date = datetime.date.today()
+    #             year = date.strftime("%Y")
+    #             month = date.strftime("%m")
 
-                calendar = {'1' : 'January', '2': 'February', '3': 'March', '4': 'April', 
-                    '5': 'May', '6': "June", '7': 'July', '8': 'August',
-                        '9': 'September', '10': 'October', '11': 'November', '12': 'December'}
+    #             calendar = {'1' : 'January', '2': 'February', '3': 'March', '4': 'April', 
+    #                 '5': 'May', '6': "June", '7': 'July', '8': 'August',
+    #                     '9': 'September', '10': 'October', '11': 'November', '12': 'December'}
 
-                for key in calendar:
-                    if key == month:
-                        month = calendar[key]
+    #             for key in calendar:
+    #                 if key == month:
+    #                     month = calendar[key]
                 
-                #create new folder of the year. 
-                script_path = os.path.realpath(path2)
-                new_abs_path_year = os.path.join(script_path, year)
-                new_abs_path_month = os.path.join(new_abs_path_year, month)
-                pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
-                pdf_file = pdf_file.lower().replace("'", "")
+    #             #create new folder of the year. 
+    #             script_path = os.path.realpath(path2)
+    #             new_abs_path_year = os.path.join(script_path, year)
+    #             new_abs_path_month = os.path.join(new_abs_path_year, month)
+    #             pdf_file = os.path.abspath(f'{new_abs_path_month}/{pdf_name}')
+    #             pdf_file = pdf_file.lower().replace("'", "")
 
 
                 
-                # if both the year and month path exist, insert new pdf into month directory. 
-                if os.path.exists(new_abs_path_month):
-                    await ctx.message.attachments[0].save(pdf_file)
+    #             # if both the year and month path exist, insert new pdf into month directory. 
+    #             if os.path.exists(new_abs_path_month):
+    #                 await ctx.message.attachments[0].save(pdf_file)
 
-                    print(f'Current {year} and {month} folder exists. inserted {pdf_name} \n')
+    #                 print(f'Current {year} and {month} folder exists. inserted {pdf_name} \n')
                     
-                    if os.path.exists(pdf_file):
-                        data.Automate.update_html(pdf_name,year,month)
-
-                    
-                    elif not os.path.exists(pdf_file):
-                        print("pdf file path was not found. time sleep for 10 sec")
-                        time.sleep(10)
-                        if os.path.exists(pdf_file):
-                            data.Automate.update_html(pdf_name,year,month)
-
-                        else:
-                            print("pdf file path not found")
-
-                    #NEED TO MERGE branch and Commit
-
-                    await ctx.send(f'{pdf_name} has been uploaded to github')
-
-                # if year directory exsist but not the month directory, create new month directory and insert new pdf into month path
-                elif os.path.exists(new_abs_path_year) and not os.path.exists(new_abs_path_month):
-                    #create new_month folder
-                    os.mkdir(new_abs_path_month)
-                    await ctx.message.attachments[0].save(pdf_file)
-
-
-                    #NEED TO MERGE branch and Commit
-
-                    await ctx.send(f'{pdf_name} has been uploaded to github')
-
-                    #TO DO insert arg into new months folder
-                    print(f'current {year} folder exists. Created a {month} folder and inserted {pdf_name}')
-                    
-                    
-                    if os.path.exists(pdf_file):
-                        data.Automate.update_html(pdf_name,year,month)
+    #                 if os.path.exists(pdf_file):
+    #                     data.Automate.update_html(pdf_name,year,month)
 
                     
-                    elif not os.path.exists(pdf_file):
-                        print("pdf file path was not found. time sleep for 10 sec")
-                        time.sleep(10)
-                        if os.path.exists(pdf_file):
-                            data.Automate.update_html(pdf_name,year,month)
+    #                 elif not os.path.exists(pdf_file):
+    #                     print("pdf file path was not found. time sleep for 10 sec")
+    #                     time.sleep(10)
+    #                     if os.path.exists(pdf_file):
+    #                         data.Automate.update_html(pdf_name,year,month)
 
-                        else:
-                            print("pdf file path not found")                   
+    #                     else:
+    #                         print("pdf file path not found")
+
+    #                 #NEED TO MERGE branch and Commit
+
+    #                 await ctx.send(f'{pdf_name} has been uploaded to github')
+
+    #             # if year directory exsist but not the month directory, create new month directory and insert new pdf into month path
+    #             elif os.path.exists(new_abs_path_year) and not os.path.exists(new_abs_path_month):
+    #                 #create new_month folder
+    #                 os.mkdir(new_abs_path_month)
+    #                 await ctx.message.attachments[0].save(pdf_file)
 
 
-                # if the current year path doesnt exist, create new year/month directory. Insert new pdf into month directory. 
-                elif not os.path.exists(new_abs_path_year):
-                    #create new year folder
-                    os.mkdir(new_abs_path_year)
-                    os.mkdir(new_abs_path_month)
-                    await ctx.message.attachments[0].save(pdf_file)
+    #                 #NEED TO MERGE branch and Commit
 
-                    #NEED TO MERGE branch and Commit
+    #                 await ctx.send(f'{pdf_name} has been uploaded to github')
 
-                    await ctx.send(f'{pdf_name} has been uploaded to github')
-
-                    #TO DO insert arg into new months folder
-                    print(f'created a {year}/{month}folder and inserted {pdf_name}')
-
-                    if os.path.exists(pdf_file):
-                        data.Automate.update_html(pdf_name,year,month)
+    #                 #TO DO insert arg into new months folder
+    #                 print(f'current {year} folder exists. Created a {month} folder and inserted {pdf_name}')
+                    
+                    
+    #                 if os.path.exists(pdf_file):
+    #                     data.Automate.update_html(pdf_name,year,month)
 
                     
-                    elif not os.path.exists(pdf_file):
-                        print("pdf file path was not found. time sleep for 10 sec")
-                        time.sleep(10)
-                        if os.path.exists(pdf_file):
-                            data.Automate.update_html(pdf_name,year,month)
+    #                 elif not os.path.exists(pdf_file):
+    #                     print("pdf file path was not found. time sleep for 10 sec")
+    #                     time.sleep(10)
+    #                     if os.path.exists(pdf_file):
+    #                         data.Automate.update_html(pdf_name,year,month)
 
-                        else:
-                            print("pdf file path not found")
-                return
-            else:
-                await ctx.send('The file you provided was NOT recorded. Formatting Error. \n\n Please rename the start of the file with DPI or MVI or FLI. \n\n Example: \n\n DPI_One_Pager.pdf \n MVI_One_Pager.pdf \n FLI_One_Pager.pdf')
+    #                     else:
+    #                         print("pdf file path not found")                   
 
-        except IndexError:
-            await ctx.send('I did not see a file uploaded with the !pdf command. Please drag the pdf file into the chat and type !pdf inside the ADD A COMMENT forum.')
+
+    #             # if the current year path doesnt exist, create new year/month directory. Insert new pdf into month directory. 
+    #             elif not os.path.exists(new_abs_path_year):
+    #                 #create new year folder
+    #                 os.mkdir(new_abs_path_year)
+    #                 os.mkdir(new_abs_path_month)
+    #                 await ctx.message.attachments[0].save(pdf_file)
+
+    #                 #NEED TO MERGE branch and Commit
+
+    #                 await ctx.send(f'{pdf_name} has been uploaded to github')
+
+    #                 #TO DO insert arg into new months folder
+    #                 print(f'created a {year}/{month}folder and inserted {pdf_name}')
+
+    #                 if os.path.exists(pdf_file):
+    #                     data.Automate.update_html(pdf_name,year,month)
+
+                    
+    #                 elif not os.path.exists(pdf_file):
+    #                     print("pdf file path was not found. time sleep for 10 sec")
+    #                     time.sleep(10)
+    #                     if os.path.exists(pdf_file):
+    #                         data.Automate.update_html(pdf_name,year,month)
+
+    #                     else:
+    #                         print("pdf file path not found")
+    #             return
+    #         else:
+    #             await ctx.send('The file you provided was NOT recorded. Formatting Error. \n\n Please rename the start of the file with DPI or MVI or FLI. \n\n Example: \n\n DPI_One_Pager.pdf \n MVI_One_Pager.pdf \n FLI_One_Pager.pdf')
+
+    #     except IndexError:
+    #         await ctx.send('I did not see a file uploaded with the !pdf command. Please drag the pdf file into the chat and type !pdf inside the ADD A COMMENT forum.')
             
-    @upload_pdf_file.error
-    async def upload_pdf_file_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('Command failed. \n Please make sure to type: !pdf and drag pdf file into chat.')
+    # @upload_pdf_file.error
+    # async def upload_pdf_file_error(self, ctx, error):
+    #     if isinstance(error, commands.MissingRequiredArgument):
+    #         await ctx.send('Command failed. \n Please make sure to type: !pdf and drag pdf file into chat.')
 
 def setup(bot):
     bot.add_cog(Admin(bot))

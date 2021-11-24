@@ -36,11 +36,10 @@ class UserSheet:
     #collects info from sheets and puts it in SingleContributor TABLE
     def collectContributorSheet(self): 
         sheet = self.client.open_by_url(str(self.url))
-        contributionSheet = sheet.get_worksheet(0)
-        ranges = ['A3:H51']
+        contributionSheet = sheet.get_worksheet(1)
+        ranges = ['A3:J51']
         user_data = contributionSheet.batch_get(ranges)
         db = self.db
-
 
         def date_sub(arg):                              #helper function to cover the people who submit on the 1st of the month and the rest of the stragglers. 
             date = int(arg.strftime("%d"))                #if the current day is within the first week of the month, it will return the previous month for the date. else, return current month
@@ -67,7 +66,7 @@ class UserSheet:
         for outershell in user_data:
             for innershell in outershell:
                 row +=1  
-                if len(innershell) >= 7 and not (innershell[0].startswith("#0") or innershell[0].startswith("#1") or innershell[0].startswith("#2")  # Checks to make sure peoples Owl_Id column is formatted correctly.
+                if len(innershell) >= 8 and not (innershell[0].startswith("#0") or innershell[0].startswith("#1") or innershell[0].startswith("#2")  # Checks to make sure peoples Owl_Id column is formatted correctly.
                 or innershell[0].startswith("#3") or innershell[0].startswith("#4") or innershell[0].startswith("#5") 
                 or innershell[0].startswith("#6") or innershell[0].startswith("#7") or innershell[0].startswith("#8") 
                 or innershell[0].startswith("#9")): 
@@ -77,9 +76,9 @@ class UserSheet:
 
         for outershell in user_data:
             for innershell in outershell:            
-                if len(innershell) >= 7 and innershell[2] != '' and (innershell[6] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops' or 'Asia Pacific' or 'Woman+Non-Binary' or 'Governance' or 'F.Nest') :
+                if len(innershell) >= 8 and innershell[2] != '' and (innershell[7] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops' or 'Asia Pacific' or 'Woman+Non-Binary' or 'Governance' or 'F.Nest') :
                     dash_list = list(map(is_empty, innershell))
-                    DB.AddContribution(db, date_sub(datetime.datetime.now()), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7])
+                    DB.AddContribution(db, date_sub(datetime.datetime.now()), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7], dash_list[8], dash_list[9])
                     print(f'{dash_list} \n {date_sub(datetime.datetime.now())}')
                     count+=1
   
@@ -127,7 +126,7 @@ class MasterControls:
     def collectAllOwlIDs(self): 
         # db = 'index_contribution.db'
         db = 'test.db'
-        range = ['A2:B165']
+        range = ['A2:B250']
         userInfo = self.owl_ids.batch_get(range)
 
         for outershell in userInfo:
@@ -144,7 +143,6 @@ class MasterControls:
 
 
 
-    #should pass in date
     def updateMasterSheet(self): #updates the mastersheet.
         # dbname = 'index_contribution.db'
         dbname = 'test.db'
@@ -155,12 +153,13 @@ class MasterControls:
         today_date = datetime.date.today()
         first = today_date.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
-        
-        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),))
+
+        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, DISCUSSED, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, WORKING_GROUP_LEAD, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (current_month,))        
+        # c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, DISCUSSED, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, WORKING_GROUP_LEAD, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),))
         l = list(c.fetchall())
         l2 = list(map(list, l)) #holds all the contribution data for the month
 
-        row_id = 119 # row 4-108 is reserved for main contributors. 
+        row_id = 4 # row 4-108 is reserved for main contributors. 
 
         #transforms the the owl id into integers to allow for to sort all the contributions.
         # This was made because some people forget to submit all data at once, this allows for the master sheet to have continuity between all contributors. 
@@ -189,14 +188,14 @@ class MasterControls:
 
         #inserts titles for all each contributor
         def insert_title(owl_id,row_id):
-            title_data = [owl_id, f"=VLOOKUP(A{row_id},'Owl ID reference'!$A$2:$C$600,2,FALSE)", 'Contribution', 'Link to Work', 'Other notes', 'Time contributed (Hours)', '# Functional area', 'Product',
-            f'=sumifs($I$3:$I$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Treasury")', f'=sumifs($J$3:$J$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Product")', f'=sumifs(K$3:K$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"BD")',
-            f'=sumifs($L$3:$L$1142,$B$3:B$1142,B{row_id},$G$3:$G$1142,"Creative & Design")', f'=sumifs($M$3:$M$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Dev/Engineering")', f'=sumifs($N$3:$N$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Growth")',
-            f'=sumifs(O$3:O$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Expenses")', f'=sumifs(P$3:P$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"MVI")', f'=sumifs(Q$3:Q$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Analytics")',
-            f'=sumifs(R$3:R$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Institutional Business")', f'=sumifs(S$3:S$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"People, Org & Community")', f'=sumifs(T$3:T$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"MetaGov")',
-            f'=sumifs(U$3:U$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Other")', f'=sumifs(V$3:V$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Lang-Ops")',f'=sumifs($W$3:$W$1000,$B$3:$B$1000,B{row_id},$G$3:$G$1000,"Asia Pacific")',
-            f'=sumifs($X$3:$X$1000,$B$3:$B$1000,B{row_id},$G$3:$G$1000,"Woman+Non-Binary")', f'=sumifs($Y$3:$Y$1000,$B$3:$B$1000,B{row_id},$G$3:$G$1000,"Governance")', f'=sum(I{row_id}:U{row_id})+AA{row_id + 1}', '', '', '',f'=(Z{row_id}/$B$1)+AB{row_id + 1}',
-            f'=AC{row_id + 1}']
+            title_data = [owl_id, f"=VLOOKUP(A{row_id},'Owl ID reference'!$A$2:$C$600,2,FALSE)", 'Contribution', 'Has this contribution been discussed with your WGL?','Link to Work', 'Other notes', 'Time contributed (Hours)', '# Functional area', 'Nominated WGL to review' ,'Product',
+            f'=sumifs($K$3:$K$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"F.Nest")', f'=sumifs($L$3:$L$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Product")', f'=sumifs(M$3:M$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"BD")',
+            f'=sumifs($N$3:$N$1142,$B$3:B$1142,B{row_id},$G$3:$G$1142,"Creative & Design")', f'=sumifs($O$3:$O$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Dev/Engineering")', f'=sumifs($P$3:$P$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Growth")',
+            f'=sumifs(Q$3:Q$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Expenses")', f'=sumifs(R$3:R$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"MVI")', f'=sumifs(S$3:S$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Analytics")',
+            f'=sumifs(T$3:T$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Institutional Business")', f'=sumifs(U$3:U$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Talent, Ops & Change")', f'=sumifs(V$3:V$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"MetaGov")',
+            f'=sumifs(W$3:W$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Other")', f'=sumifs(X$3:X$1142,$B$3:$B$1142,B{row_id},$G$3:$G$1142,"Lang-Ops")',f'=sumifs($Y$3:$Y$1000,$B$3:$B$1000,B{row_id},$G$3:$G$1000,"Asia Pacific")',
+            f'=sumifs($Z$3:$Z$1000,$B$3:$B$1000,B{row_id},$G$3:$G$1000,"Woman+Non-Binary")', f'=sumifs($AA$3:$AA$1000,$B$3:$B$1000,B{row_id},$G$3:$G$1000,"Governance")', f'=sum(K{row_id}:AA{row_id})+AC{row_id + 1}', '', '', '',f'=(AB{row_id}/$B$1)+AD{row_id + 1}',
+            f'=AE{row_id + 1}']
 
             ## WXY AC fixed USDC Stipen
             #need to fix data array and update 
@@ -223,7 +222,7 @@ class MasterControls:
                 }
             })
             #Format for C-H cells
-            self.raw_input.format(f'C{row_id}:H{row_id}', {
+            self.raw_input.format(f'C{row_id}:J{row_id}', {
                     "backgroundColor": {
                     "red": 0.15,
                     "green": 0.0,
@@ -241,7 +240,7 @@ class MasterControls:
                     }
             }) 
             #Format for I-Z cells
-            self.raw_input.format(f'I{row_id}:AE{row_id}', {
+            self.raw_input.format(f'K{row_id}:AG{row_id}', {
                 "backgroundColor": {
                 "red": 0.15,
                 "green": 0.0,
@@ -269,29 +268,30 @@ class MasterControls:
         }])
         
 
-        # creates the list of lists for row W and Z formulas 
+        # creates the list of lists for columns Total($) and Total(Index) formulas 
         # this allows for a batch_update. 
         dollar_sum = []
         index_sum= []
         for x in range(len(newlist)):
-            dollar_sum.append(f'=SUM(I{row_id+x}:V{row_id+x})')
+            dollar_sum.append(f'=SUM(K{row_id+x}:AA{row_id+x})')
             index_sum.append(f'=(W{row_id+x}/$B$1)')
 
         dollar_sum_l = [[x] for x in dollar_sum]
         index_sum_l = [[x] for x in index_sum]
 
         #batch update all forumlas to master sheet
+        #rowId hard coded here
         self.raw_input.batch_update([{
-           'range': 'Z109',
+           'range': 'AB4',
             'values': dollar_sum_l, 
-        }, {'range': 'AD109',
+        }, {'range': 'AF4',
             'values': index_sum_l,
             }], value_input_option = 'USER_ENTERED')
 
 
         ##### creates the titles for each person #######
         first_owl = ['holder'] #used as a starting point
-        title_row_id = 109  
+        title_row_id = 4 #was 109  
         for x in range(len(newlist)):
             ids = newlist[x][0]
             if ids != first_owl:
@@ -307,8 +307,8 @@ class MasterControls:
     #Clears last MasterSheet Data
     #Resets sheet format
     def clearLastMonthsData(self):
-        range = ['A109:AE1500']
-        self.raw_input.format("A109:AE1500", {
+        range = ['A4:AH1500']
+        self.raw_input.format('A4:AH1500', {
             "backgroundColor": {
             "red": 1.0,
             "green": 1.0,
