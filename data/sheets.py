@@ -154,8 +154,8 @@ class MasterControls:
         first = today_date.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
 
-        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, DISCUSSED, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, WORKING_GROUP_LEAD, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (current_month,))        
-        # c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, DISCUSSED, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, WORKING_GROUP_LEAD, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),))
+        # c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, DISCUSSED, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, WORKING_GROUP_LEAD, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (current_month,))   #for testing purposes     
+        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, DISCUSSED, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, WORKING_GROUP_LEAD, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),))
         l = list(c.fetchall())
         l2 = list(map(list, l)) #holds all the contribution data for the month
 

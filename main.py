@@ -35,11 +35,11 @@ bot.remove_command('help')
 
 if __name__ == '__main__':
 
-    # db = 'index_contribution.db'
-    # db = 'test.db'
-    # DB.create(db)
-    # m = MasterControls()
-    # m.collectAllOwlIDs
+    db = 'index_contribution.db'
+    db = 'test.db'
+    DB.create(db)
+    m = MasterControls()
+    m.collectAllOwlIDs
 
     @bot.event
     async def on_ready():
