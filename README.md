@@ -1,14 +1,16 @@
 # Automated Monthly Contribution Bot
 
-Discord bot created to automate tracking and recording of 150 - 200 monthly contributors each month for the Index Coop. 
+Discord bot created to automate tracking and recording of 150 - 200 monthly contributors each month for the Index Coop. This bot allows Index Coops contributors to submit their work for each month. To interact with the bot, you will send a direct message with the appropriate commands. 
+
+This Bot has a SQLite Database to hold each contributors work for the month. At the end of each month, the bot will up date a master google sheet with everyones data. 
 
 Technologies:
 
-Python
-SQL
-Discord API
-Google Cloud API
-Google Sheets API
+- Python
+- SQL
+- Discord API
+- Google Cloud API
+- Google Sheets API
 
 ## Contributor Commands
 
