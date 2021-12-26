@@ -1,3 +1,5 @@
 /config.json
 /.env
 /gSheetCreds.json
+/.vscode
+/__pycache__
