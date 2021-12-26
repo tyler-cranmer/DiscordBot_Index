@@ -6,12 +6,12 @@ Discord bot created to automate tracking and recording of 150 - 200 monthly cont
 Must Direct Message Bot. 
 
 ### !newContributor
-    - Creates new google work sheet.
-    -  Command syntax: !newContributor
+- Creates new google work sheet.
+- Command syntax: !newContributor
 ### !submitForm (google sheet url)
 - Submits google sheet to database.
 - Command syntax: !submitForm (google sheet url) with no brackets
-!help
+#### !help
 - Brings up list of commands
 !adminHelp (Administrator only)
 - Displays list of Admin controls
