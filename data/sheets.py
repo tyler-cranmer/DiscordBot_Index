@@ -11,10 +11,17 @@ import time
 with open("./config.json") as f:
     configData = json.load(f)
 
-template_creds = configData["Contributor_key"] #file_id for the new-contributor rewards sheet
-master_creds = configData["Master_key"]
-owl_sheet_creds = configData['Master_owlID_id']
-raw_input_creds = configData['Raw_input_id']
+template_creds = configData["CONTRIBUTOR_SHEET_KEY"] #file_id for the new-contributor rewards sheet
+master_creds = configData["MASTER_SHEET_KEY"]
+owl_sheet_creds = configData['MASTER_OWLID_GID']
+finance_nest_creds = configData['FINANCE_NEST_GID']
+growth_nest_creds = configData['GROWTH_NEST_GID']
+community_nest_creds = configData['COMMUNITY_NEST_GID']
+product_nest_creds = configData['PRODUCT_NEST_GID']
+governance_nest_creds = configData['GOVERNANCE_NEST_GID']
+
+
+
 
 
 
@@ -52,7 +59,7 @@ class UserSheet:
             else:
                 return arg.strftime("%m/%y")
 
-        #function to check if a google sheet cell is empty.
+        # function to check if a google sheet cell is empty.
         # fills empty cell with --- 
         def is_empty(x):
             if x == '':
@@ -63,7 +70,7 @@ class UserSheet:
         count = 0
         row = 2
         rows = []
-        for outershell in user_data:
+        for outershell in user_data:  # Checks to make sure peoples Owl_Id column is formatted correctly.
             for innershell in outershell:
                 row +=1  
                 if len(innershell) >= 8 and not (innershell[0].startswith("#0") or innershell[0].startswith("#1") or innershell[0].startswith("#2")  # Checks to make sure peoples Owl_Id column is formatted correctly.
@@ -76,7 +83,7 @@ class UserSheet:
 
         for outershell in user_data:
             for innershell in outershell:            
-                if len(innershell) >= 8 and innershell[2] != '' and (innershell[7] == 'BD' or 'Product' or 'Treasury' or 'Creative & Design' or 'Dev/Engineering' or 'Growth' or 'Expenses' or 'MVI' or 'Analytics' or 'People Org & Community' or 'Institutional Business' or 'MetaGov' or 'Other' or 'Lang-Ops' or 'Asia Pacific' or 'Woman+Non-Binary' or 'Governance' or 'F.Nest') :
+                if len(innershell) >= 8 and innershell[2] != '' and (innershell[6] == 'Community' or 'Growth' or 'Governance' or 'Finance' or 'Product') :
                     dash_list = list(map(is_empty, innershell))
                     DB.AddContribution(db, date_sub(datetime.datetime.now()), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7], dash_list[8], dash_list[9])
                     print(f'{dash_list} \n {date_sub(datetime.datetime.now())}')
@@ -118,10 +125,15 @@ class MasterControls:
         client = gspread.authorize(credentials) # authenticate the JSON key with gspread
 
         sheet = client.open_by_key(master_creds)  #connects with mastersheet
-        self.raw_input = sheet.get_worksheet_by_id(raw_input_creds) #connects with raw input sheet
+        self.raw_input = sheet.get_worksheet_by_id(raw_input_creds) #connects with raw input sheet <----------NEED TO DELETE --------->
+        self.finance_nest = sheet.get_worksheet_by_id(finance_nest_creds)
+        self.growth_nest = sheet.get_worksheet_by_id(growth_nest_creds)
+        self.community_nest = sheet.get_worksheet_by_id(community_nest_creds)
+        self.product_nest = sheet.get_worksheet_by_id(product_nest_creds)
+        self.governance_nest = sheet.get_worksheet_by_id(governance_nest_creds)
         self.owl_ids = sheet.get_worksheet_by_id(owl_sheet_creds) #connects with owl id reference worksheet
 
-
+    # MIGHT TAKE THIS ENTIRE FUNCTION OUT> DONT REALLY NEED TO COLLECT OWLIDS. 
     #collects all the users info stored in Owl ID reference worksheet and puts them into Contributor TABLE
     def collectAllOwlIDs(self): 
         # db = 'index_contribution.db'
@@ -154,8 +166,8 @@ class MasterControls:
         first = today_date.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
 
-        # c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, DISCUSSED, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, WORKING_GROUP_LEAD, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (current_month,))   #for testing purposes     
-        c.execute("SELECT USER_ID, DISCORD_NAME, CONTRIBUTION_INFO, DISCUSSED, LINKS, OTHER_NOTES, HOURS, FUNCTIONAL_GROUP, WORKING_GROUP_LEAD, PRODUCT FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),))
+        c.execute("SELECT OWL_ID, DISCORD_NAME, CONTRIBUTION_INFO, HAS_DISCUSSED, LINKS, OTHER_NOTES, HOURS, NEST, POD, LEAD_TO_REVIEW FROM SINGLECONTRIBUTION WHERE DATE = ?", (current_month,))   #for testing purposes     
+        # c.execute("SELECT OWL_ID, DISCORD_NAME, CONTRIBUTION_INFO, HAS_DISCUSSED, LINKS, OTHER_NOTES, HOURS, NEST, POD, LEAD_TO_REVIEW FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),))
         l = list(c.fetchall())
         l2 = list(map(list, l)) #holds all the contribution data for the month
 
