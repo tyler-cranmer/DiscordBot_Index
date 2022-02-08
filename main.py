@@ -36,7 +36,7 @@ bot.remove_command('help')
 
 if __name__ == '__main__':
 
-    DB.create(db_name)
+    # DB.create(db_name)
 
     @bot.event
     async def on_ready():
