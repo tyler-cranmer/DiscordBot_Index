@@ -17,31 +17,31 @@ import sqlite3
 #
 # PARAMS:
 # dbname - name of database (str)
-# creates a Contribution table (USER_ID, discord name and wallet address)
-# creates a SINGLECONTRIBUTION submission table(data, contribution info, links, other notes, functional group, USER_ID)
+# creates a Contribution table (OWL_ID, discord name)
+# creates a SINGLECONTRIBUTION submission table(Date, OWL_ID, Discord Name, Contribution Info, Has Discussed?, Links, Other_Notes, Hours, Nest, Pod, Lead to Review)
 ##
 class DB:
     def create(dbname):
         connection = sqlite3.connect(dbname) #database name must end in .db
         c = connection.cursor() #cursor
         c.execute("""CREATE TABLE CONTRIBUTORS (
-            USER_ID TEXT NOT NULL,
+            OWL_ID TEXT NOT NULL,
             DISCORD_NAME TEXT NOT NULL
         );""")
                     
 
         c.execute("""CREATE TABLE SINGLECONTRIBUTION (
             DATE TEXT NOT NULL,
-            USER_ID TEXT NOT NULL,
+            OWL_ID TEXT NOT NULL,
             DISCORD_NAME TEXT NOT NULL,
             CONTRIBUTION_INFO TEXT,
-            DISCUSSED TEXT,
+            HAS_DISCUSSED TEXT,
             LINKS TEXT,
             OTHER_NOTES TEXT,
             HOURS TEXT,
-            FUNCTIONAL_GROUP TEXT NOT NULL,
-            WORKING_GROUP_LEAD TEXT,
-            PRODUCT TEXT,
+            NEST TEXT NOT NULL,
+            POD TEXT,
+            LEAD_TO_REVIEW TEXT,
             FOREIGN KEY(USER_ID) REFERENCES CONTRIBUTORS(USER_ID)
         );""")
 
@@ -108,33 +108,33 @@ class DB:
     # owlId - index ID (int)
     # discordName - discordName (str)
     # contributionInfo- contribution description (str)
+    # has_discussed - was this job discussed with lead? (str)
     # links - contribution links
     # otherNotes - additional notes (str)
     # hours - hours worked (str)
-    # functionGroup - function group (str)
-    # product - product group (str)
+    # nest - function group (str)
+    # pod - product group (str)
     #
     # INSERT:
-    #(dbname, owlId, DATE, contributionInfo, links, othernotes, hours, functionGroup, product) into songle contribution table
+    #(dbname, DATE, owlId, discordName, contributionInfo, hasDiscussed, links, othernotes, hours, nest, pod) into songle contribution table
     ##
 
 
-    def AddContribution(dbname, date, owlId, discordName, contributionInfo, discussion, links, otherNotes, hours, functionalGroup, lead_name, product):
+    def AddContribution(dbname, date, owlId, discordName, contributionInfo, hasDiscussed, links, otherNotes, hours, nest, pod):
         connection = sqlite3.connect(dbname)
         c = connection.cursor() 
 
-        c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:date, :id, :discord, :con_info, :discuss, :link, :notes, :time, :func_group, :wgl, :product_area);", 
+        c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:date, :id, :discord, :con_info, :discuss, :link, :notes, :time, :func_group, :product_area);", 
             {'date': date, 
             'id': owlId, 
             'discord': discordName, 
             'con_info': contributionInfo, 
-            'discuss': discussion,
+            'discuss': hasDiscussion,
             'link': links, 
             'notes': otherNotes, 
             'time': hours, 
-            'func_group': functionalGroup,
-            'wgl': lead_name, 
-            'product_area': product
+            'func_group': nest,
+            'product_area': pod
             })
 
         connection.commit()
