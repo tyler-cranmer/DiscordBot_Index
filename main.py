@@ -22,6 +22,7 @@ else:
 token =  configData["Token"]
 prefix = configData["Prefix"]
 
+db_name = configData["database_name"]
 
 # turn off messages from guilds, so you only get messages from DM channels
 my_intents = discord.Intents.default()
@@ -35,11 +36,7 @@ bot.remove_command('help')
 
 if __name__ == '__main__':
 
-    db = 'index_contribution.db'
-    db = 'test.db'
-    DB.create(db)
-    m = MasterControls()
-    m.collectAllOwlIDs
+    DB.create(db_name)
 
     @bot.event
     async def on_ready():

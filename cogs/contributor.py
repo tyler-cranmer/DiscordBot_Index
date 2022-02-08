@@ -7,7 +7,7 @@ class contributor(commands.Cog):
         self.bot = bot
 
     #submits google sheet to database
-    #!submitForm {discordname} needs quotes for " name with spaces "
+    #!submitForm {googlesheet url} needs quotes for " name with spaces "
     @commands.command(name='submitForm')
     async def submitForm(self, ctx, arg):
         index_contributor = data.UserSheet(arg)
@@ -28,7 +28,7 @@ class contributor(commands.Cog):
             await ctx.send('Command failed. \n Please make sure to type: !submitForm "url-of-google-sheet"')
         
     #creates new contributor sheet
-    #!newContributor {discordname} {gmail} needs quotes for " name with spaces "
+    #!newContributor
     @commands.command(name='newContributor')
     async def newContributor(self, ctx):
         new_contributor = data.NewUser()

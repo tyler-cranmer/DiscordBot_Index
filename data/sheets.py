@@ -19,6 +19,7 @@ growth_nest_creds = configData['GROWTH_NEST_GID']
 community_nest_creds = configData['COMMUNITY_NEST_GID']
 product_nest_creds = configData['PRODUCT_NEST_GID']
 governance_nest_creds = configData['GOVERNANCE_NEST_GID']
+db_name = configData["database_name"]
 
 
 
@@ -29,8 +30,7 @@ governance_nest_creds = configData['GOVERNANCE_NEST_GID']
 class UserSheet:
     def __init__(self, url):
         self.url = url
-        # self.db = 'index_contribution.db'
-        self.db = 'test.db'
+        self.db = "index_db"
         self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
             'https://www.googleapis.com/auth/drive.file',
@@ -48,16 +48,19 @@ class UserSheet:
         user_data = contributionSheet.batch_get(ranges)
         db = self.db
 
-        def date_sub(arg):                              #helper function to cover the people who submit on the 1st of the month and the rest of the stragglers. 
-            date = int(arg.strftime("%d"))                #if the current day is within the first week of the month, it will return the previous month for the date. else, return current month
-            if date <= 7:
-                date = datetime.datetime.now().strftime("%m/%y")
-                today_date = datetime.date.today()
-                first = today_date.replace(day=1)
-                lastMonth = first - datetime.timedelta(days=1)
-                return(lastMonth.strftime("%m/%y"))
-            else:
-                return arg.strftime("%m/%y")
+        # def date_sub(arg):                              #helper function to cover the people who submit on the 1st of the month and the rest of the stragglers. 
+        #     date = int(arg.strftime("%d"))                #if the current day is within the first week of the month, it will return the previous month for the date. else, return current month
+        #     if date <= 7:
+        #         date = datetime.datetime.now().strftime("%m/%y")
+        #         today_date = datetime.date.today()
+        #         first = today_date.replace(day=1)
+        #         lastMonth = first - datetime.timedelta(days=1)
+        #         return(lastMonth.strftime("%m/%y"))
+        #     else:
+        #         return arg.strftime("%m/%y")
+
+        def date_sub(arg):     #We changed the submission dates, no longer need to account for laggers.            
+            return arg.strftime("%m/%y")
 
         # function to check if a google sheet cell is empty.
         # fills empty cell with --- 
@@ -83,7 +86,7 @@ class UserSheet:
 
         for outershell in user_data:
             for innershell in outershell:            
-                if len(innershell) >= 8 and innershell[2] != '' and (innershell[6] == 'Community' or 'Growth' or 'Governance' or 'Finance' or 'Product') :
+                if len(innershell) >= 8 and innershell[2] != '' and (innershell[7] == 'Community' or 'Growth' or 'Governance' or 'Finance' or 'Product') :
                     dash_list = list(map(is_empty, innershell))
                     DB.AddContribution(db, date_sub(datetime.datetime.now()), dash_list[0], dash_list[1], dash_list[2], dash_list[3], dash_list[4], dash_list[5], dash_list[6], dash_list[7], dash_list[8], dash_list[9])
                     print(f'{dash_list} \n {date_sub(datetime.datetime.now())}')
@@ -95,8 +98,7 @@ class UserSheet:
 
 class NewUser:
     def __init__(self):
-            # self.db = 'index_contribution.db'
-            self.db = 'test.db'
+            self.db = db_name
             self.scope = [
             'https://www.googleapis.com/auth/spreadsheets',
             'https://www.googleapis.com/auth/drive.file',
@@ -137,7 +139,7 @@ class MasterControls:
     #collects all the users info stored in Owl ID reference worksheet and puts them into Contributor TABLE
     def collectAllOwlIDs(self): 
         # db = 'index_contribution.db'
-        db = 'test.db'
+        db = db_name
         range = ['A2:B250']
         userInfo = self.owl_ids.batch_get(range)
 
@@ -150,15 +152,14 @@ class MasterControls:
     #They might want this to connect to google sheets database....    
     def changeWalletAddress(self, owlId, walletAddress): 
         # db = 'index_contribution.db'
-        db = 'test.db'
+        db = db_name
         DB.changeWallet(db, owlId, walletAddress)
 
 
 
     def updateMasterSheet(self): #updates the mastersheet.
-        # dbname = 'index_contribution.db'
-        dbname = 'test.db'
-        connection = sqlite3.connect(dbname)
+        db = db_name
+        connection = sqlite3.connect(db)
         c = connection.cursor() 
 
         current_month = datetime.datetime.now().strftime("%m/%y")
@@ -198,120 +199,54 @@ class MasterControls:
                     new_data[x][0] = '#' + new_data[x][0]
             return new_data
 
-        #inserts titles for all each contributor
-        def insert_title(owl_id,row_id):
-            title_data = [owl_id, f"=VLOOKUP(A{row_id},'Owl ID reference'!$A$2:$B$600,2,FALSE)", 'Contribution', 'Has this contribution been discussed with your WGL?','Link to Work', 'Other notes', 'Time contributed (Hours)', '# Functional area', 'Nominated WGL to review' ,'Product',
-            f'=sumifs($K$3:$K$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"F.Nest")', f'=sumifs($L$3:$L$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Product")', f'=sumifs(M$3:M$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"BD")',
-            f'=sumifs($N$3:$N$1000,$B$3:B$1000,B{row_id},$H$3:$H$1000,"Creative & Design")', f'=sumifs($O$3:$O$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Dev/Engineering")', f'=sumifs($P$3:$P$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Growth&Marketing")',
-            f'=sumifs($Q$3:$Q$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Expenses")', f'=sumifs($R$3:$R$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"MVI")', f'=sumifs($S$3:$S$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Analytics")',
-            f'=sumifs($T$3:$T$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Institutional Business")', f'=sumifs($U$3:$U$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Talent, Ops & Change")', f'=sumifs($V$3:$V$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"MetaGov")',
-            f'=sumifs($W$3:$W$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Other")', f'=sumifs($X$3:$X$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Lang-Ops")',f'=sumifs($Y$3:$Y$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Asia Pacific")',
-            f'=sumifs($Z$3:$Z$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Woman+Non-Binary")', f'=sumifs($AA$3:$AA$1000,$B$3:$B$1000,B{row_id},$H$3:$H$1000,"Governance")', f'=sum(K{row_id}:AA{row_id})+AC{row_id + 1}', '', '', '',f'=(AB{row_id}/$B$1)+AD{row_id + 1}',
-            f'=AE{row_id + 1}']
-
-            ## WXY AC fixed USDC Stipen
-            #need to fix data array and update 
-
-            self.raw_input.insert_row(title_data, index = row_id, value_input_option='USER_ENTERED')
-
-
-            #Format the first A-B Cells
-            self.raw_input.format(f'A{row_id}:B{row_id}', {
-                "backgroundColor": {
-                "red": 1.0,
-                "green": 0.0,
-                "blue": 0.0
-                },
-                "horizontalAlignment": "CENTER",
-                "textFormat": {
-                "foregroundColor": {
-                    "red": 1.0,
-                    "green": 1.0,
-                    "blue": 1.0
-                },
-                "fontSize": 12,
-                "bold": True
-                }
-            })
-            #Format for C-H cells
-            self.raw_input.format(f'C{row_id}:J{row_id}', {
-                    "backgroundColor": {
-                    "red": 0.15,
-                    "green": 0.0,
-                    "blue": 0.50
-                    },
-                    "horizontalAlignment": "CENTER",
-                    "textFormat": {
-                    "foregroundColor": {
-                        "red": 1.0,
-                        "green": 1.0,
-                        "blue": 1.0
-                    },
-                    "fontSize": 12,
-                    "bold": True
-                    }
-            }) 
-            #Format for I-Z cells
-            self.raw_input.format(f'K{row_id}:AH{row_id}', {
-                "backgroundColor": {
-                "red": 0.15,
-                "green": 0.0,
-                "blue": 0.50
-                },
-                "horizontalAlignment": "CENTER",
-                "textFormat": {
-                "foregroundColor": {
-                    "red": 1.0,
-                    "green": 1.0,
-                    "blue": 1.0
-                },
-                "fontSize": 10,
-                "bold": False
-                }
-            })
-
         newlist = sort_list(l2)
+        finance_list = []
+        growth_list = []
+        community_list = []
+        product_list = []
+        governance_list = []
+        other_list = []
+        print(newList)
 
-
-       #Batch updates contribution list
-        self.raw_input.batch_update([{
-           'range': f'A{row_id}',
-            'values': newlist, 
-        }])
+    #    #Batch updates contribution list
+    #     self.raw_input.batch_update([{
+    #        'range': f'A{row_id}',
+    #         'values': newlist, 
+    #     }])
         
 
-        # creates the list of lists for columns Total($) and Total(Index) formulas 
-        # this allows for a batch_update. 
-        dollar_sum = []
-        index_sum= []
-        for x in range(len(newlist)):
-            dollar_sum.append(f'=SUM(K{row_id+x}:AA{row_id+x})')
-            index_sum.append(f'=(AB{row_id+x}/$B$1)')
+    #     # creates the list of lists for columns Total($) and Total(Index) formulas 
+    #     # this allows for a batch_update. 
+    #     dollar_sum = []
+    #     index_sum= []
+    #     for x in range(len(newlist)):
+    #         dollar_sum.append(f'=SUM(K{row_id+x}:AA{row_id+x})')
+    #         index_sum.append(f'=(AB{row_id+x}/$B$1)')
 
-        dollar_sum_l = [[x] for x in dollar_sum]
-        index_sum_l = [[x] for x in index_sum]
+    #     dollar_sum_l = [[x] for x in dollar_sum]
+    #     index_sum_l = [[x] for x in index_sum]
 
-        #batch update all forumlas to master sheet
-        #rowId hard coded here
-        self.raw_input.batch_update([{
-           'range': 'AB4',
-            'values': dollar_sum_l, 
-        }, {'range': 'AF4',
-            'values': index_sum_l,
-            }], value_input_option = 'USER_ENTERED')
+    #     #batch update all forumlas to master sheet
+    #     #rowId hard coded here
+    #     self.raw_input.batch_update([{
+    #        'range': 'AB4',
+    #         'values': dollar_sum_l, 
+    #     }, {'range': 'AF4',
+    #         'values': index_sum_l,
+    #         }], value_input_option = 'USER_ENTERED')
 
 
-        ##### creates the titles for each person #######
-        first_owl = ['holder'] #used as a starting point
-        title_row_id = 4 #was 109  
-        for x in range(len(newlist)):
-            ids = newlist[x][0]
-            if ids != first_owl:
-                first_owl = ids
-                insert_title(first_owl, title_row_id)
-                title_row_id +=2
-            else:
-                title_row_id +=1
+    #     ##### creates the titles for each person #######
+    #     first_owl = ['holder'] #used as a starting point
+    #     title_row_id = 4 #was 109  
+    #     for x in range(len(newlist)):
+    #         ids = newlist[x][0]
+    #         if ids != first_owl:
+    #             first_owl = ids
+    #             insert_title(first_owl, title_row_id)
+    #             title_row_id +=2
+    #         else:
+    #             title_row_id +=1
         
     
 

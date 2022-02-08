@@ -41,8 +41,7 @@ class DB:
             HOURS TEXT,
             NEST TEXT NOT NULL,
             POD TEXT,
-            LEAD_TO_REVIEW TEXT,
-            FOREIGN KEY(USER_ID) REFERENCES CONTRIBUTORS(USER_ID)
+            LEAD_TO_REVIEW TEXT
         );""")
 
         connection.commit()
@@ -114,27 +113,29 @@ class DB:
     # hours - hours worked (str)
     # nest - function group (str)
     # pod - product group (str)
+    # lead - lead_to_review (str)
     #
     # INSERT:
     #(dbname, DATE, owlId, discordName, contributionInfo, hasDiscussed, links, othernotes, hours, nest, pod) into songle contribution table
     ##
 
 
-    def AddContribution(dbname, date, owlId, discordName, contributionInfo, hasDiscussed, links, otherNotes, hours, nest, pod):
+    def AddContribution(dbname, date, owlId, discordName, contributionInfo, hasDiscussed, links, otherNotes, hours, nest, pod, lead):
         connection = sqlite3.connect(dbname)
         c = connection.cursor() 
 
-        c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:date, :id, :discord, :con_info, :discuss, :link, :notes, :time, :func_group, :product_area);", 
-            {'date': date, 
-            'id': owlId, 
-            'discord': discordName, 
-            'con_info': contributionInfo, 
-            'discuss': hasDiscussion,
-            'link': links, 
-            'notes': otherNotes, 
-            'time': hours, 
-            'func_group': nest,
-            'product_area': pod
+        c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:DATE, :OWL_ID, :DISCORD_NAME, :CONTRIBUTION_INFO, :HAS_DISCUSSED, :LINKS, :OTHER_NOTES, :HOURS, :NEST, :POD, :LEAD_TO_REVIEW);", 
+            {'DATE': date, 
+            'OWL_ID': owlId, 
+            'DISCORD_NAME': discordName, 
+            'CONTRIBUTION_INFO': contributionInfo, 
+            'HAS_DISCUSSED': hasDiscussed,
+            'LINKS': links, 
+            'OTHER_NOTES': otherNotes, 
+            'HOURS': hours, 
+            'NEST': nest,
+            'POD': pod,
+            'LEAD_TO_REVIEW': lead
             })
 
         connection.commit()
