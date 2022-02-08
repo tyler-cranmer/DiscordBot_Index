@@ -48,6 +48,48 @@ class DB:
         connection.close()
 
     ##
+    # Function to insert a single contribution into table.
+    #
+    # PARAMS:
+    # dbname - database name (str)
+    # date - from datetime (str) (mm/yy)
+    # owlId - index ID (int)
+    # discordName - discordName (str)
+    # contributionInfo- contribution description (str)
+    # has_discussed - was this job discussed with lead? (str)
+    # links - contribution links
+    # otherNotes - additional notes (str)
+    # hours - hours worked (str)
+    # nest - function group (str)
+    # pod - product group (str)
+    # lead - lead_to_review (str)
+    #
+    # INSERT:
+    #(dbname, DATE, owlId, discordName, contributionInfo, hasDiscussed, links, othernotes, hours, nest, pod) into songle contribution table
+    ##
+
+
+    def AddContribution(dbname, date, owlId, discordName, contributionInfo, hasDiscussed, links, otherNotes, hours, nest, pod, lead):
+        connection = sqlite3.connect(dbname)
+        c = connection.cursor() 
+
+        c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:DATE, :OWL_ID, :DISCORD_NAME, :CONTRIBUTION_INFO, :HAS_DISCUSSED, :LINKS, :OTHER_NOTES, :HOURS, :NEST, :POD, :LEAD_TO_REVIEW);", 
+            {'DATE': date, 
+            'OWL_ID': owlId, 
+            'DISCORD_NAME': discordName, 
+            'CONTRIBUTION_INFO': contributionInfo, 
+            'HAS_DISCUSSED': hasDiscussed,
+            'LINKS': links, 
+            'OTHER_NOTES': otherNotes, 
+            'HOURS': hours, 
+            'NEST': nest,
+            'POD': pod,
+            'LEAD_TO_REVIEW': lead
+            })
+
+        connection.commit()
+        connection.close()
+    ##
     # Function to add new contributors to the database under the contributor table.
     # calls Contributor class, creates user_id and  stores values . 
     #
@@ -93,51 +135,6 @@ class DB:
             raise ValueError('Invalid Wallet Address')
         else:
             c.execute("UPDATE CONTRIBUTORS SET WALLET_ADDRESS=:new_wallet WHERE USER_ID=:id;", {'new_wallet': walletAddress, 'id': owlId})
-        connection.commit()
-        connection.close()
-
-
-
-    ##
-    # Function to insert a single contribution into table.
-    #
-    # PARAMS:
-    # dbname - database name (str)
-    # date - from datetime (str) (mm/yy)
-    # owlId - index ID (int)
-    # discordName - discordName (str)
-    # contributionInfo- contribution description (str)
-    # has_discussed - was this job discussed with lead? (str)
-    # links - contribution links
-    # otherNotes - additional notes (str)
-    # hours - hours worked (str)
-    # nest - function group (str)
-    # pod - product group (str)
-    # lead - lead_to_review (str)
-    #
-    # INSERT:
-    #(dbname, DATE, owlId, discordName, contributionInfo, hasDiscussed, links, othernotes, hours, nest, pod) into songle contribution table
-    ##
-
-
-    def AddContribution(dbname, date, owlId, discordName, contributionInfo, hasDiscussed, links, otherNotes, hours, nest, pod, lead):
-        connection = sqlite3.connect(dbname)
-        c = connection.cursor() 
-
-        c.execute("INSERT INTO SINGLECONTRIBUTION VALUES (:DATE, :OWL_ID, :DISCORD_NAME, :CONTRIBUTION_INFO, :HAS_DISCUSSED, :LINKS, :OTHER_NOTES, :HOURS, :NEST, :POD, :LEAD_TO_REVIEW);", 
-            {'DATE': date, 
-            'OWL_ID': owlId, 
-            'DISCORD_NAME': discordName, 
-            'CONTRIBUTION_INFO': contributionInfo, 
-            'HAS_DISCUSSED': hasDiscussed,
-            'LINKS': links, 
-            'OTHER_NOTES': otherNotes, 
-            'HOURS': hours, 
-            'NEST': nest,
-            'POD': pod,
-            'LEAD_TO_REVIEW': lead
-            })
-
         connection.commit()
         connection.close()
 

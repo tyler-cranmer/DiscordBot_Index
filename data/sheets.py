@@ -19,6 +19,7 @@ growth_nest_creds = configData['GROWTH_NEST_GID']
 community_nest_creds = configData['COMMUNITY_NEST_GID']
 product_nest_creds = configData['PRODUCT_NEST_GID']
 governance_nest_creds = configData['GOVERNANCE_NEST_GID']
+contributor_sheet_creds = configData['CONTRIBUTOR_SHEET_GID']
 db_name = configData["database_name"]
 
 
@@ -43,7 +44,7 @@ class UserSheet:
     #collects info from sheets and puts it in SingleContributor TABLE
     def collectContributorSheet(self): 
         sheet = self.client.open_by_url(str(self.url))
-        contributionSheet = sheet.get_worksheet(1)
+        contributionSheet = sheet.get_worksheet_by_id(contributor_sheet_creds)
         ranges = ['A3:J51']
         user_data = contributionSheet.batch_get(ranges)
         db = self.db
@@ -122,7 +123,6 @@ class MasterControls:
         self.product_nest = sheet.get_worksheet_by_id(product_nest_creds)
         self.governance_nest = sheet.get_worksheet_by_id(governance_nest_creds)
 
-    # MIGHT TAKE THIS ENTIRE FUNCTION OUT> DONT REALLY NEED TO COLLECT OWLIDS. 
     #collects all the users info stored in Owl ID reference worksheet and puts them into Contributor TABLE
     def collectAllOwlIDs(self): 
         db = db_name
@@ -135,14 +135,14 @@ class MasterControls:
                     DB.AddContributor(db, innershell[0], innershell[1])
 
     #change wallet address.    
-    #They might want this to connect to google sheets database....    
     def changeWalletAddress(self, owlId, walletAddress): 
         db = db_name
         DB.changeWallet(db, owlId, walletAddress)
 
 
-
-    def updateMasterSheet(self): #updates the mastersheet.
+    # Updates the mastersheet with contributions
+    # Seperates and submits contributions by NEST working groups
+    def updateMasterSheet(self): 
         dbname = db_name
         connection = sqlite3.connect(dbname)
         c = connection.cursor() 
@@ -157,13 +157,13 @@ class MasterControls:
         first = today_date.replace(day=1)
         last_month = first - datetime.timedelta(days=1)
 
-        c.execute("SELECT OWL_ID, DISCORD_NAME, CONTRIBUTION_INFO, HAS_DISCUSSED, LINKS, OTHER_NOTES, HOURS, NEST, POD, LEAD_TO_REVIEW FROM SINGLECONTRIBUTION WHERE DATE = ?", (current_month,))   #for testing purposes     
-        # c.execute("SELECT OWL_ID, DISCORD_NAME, CONTRIBUTION_INFO, HAS_DISCUSSED, LINKS, OTHER_NOTES, HOURS, NEST, POD, LEAD_TO_REVIEW FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),))
+        c.execute("SELECT OWL_ID, DISCORD_NAME, CONTRIBUTION_INFO, HAS_DISCUSSED, LINKS, OTHER_NOTES, HOURS, NEST, POD, LEAD_TO_REVIEW FROM SINGLECONTRIBUTION WHERE DATE = ?", (current_month,))      
+        # c.execute("SELECT OWL_ID, DISCORD_NAME, CONTRIBUTION_INFO, HAS_DISCUSSED, LINKS, OTHER_NOTES, HOURS, NEST, POD, LEAD_TO_REVIEW FROM SINGLECONTRIBUTION WHERE DATE = ?", (last_month.strftime("%m/%y"),)) #for testing purposes 
         db_list = list(c.fetchall())
         formatted_db_list = list(map(list, db_list)) #converts to a list of list. Formatting for gspread. 
  
 
-        #transforms the the owl id into integers to allow for to sort all the contributions.
+        # transforms the the owl id into integers to allow for to sort all the contributions.
         # This was made because some people forget to submit all data at once, this allows for the master sheet to have continuity between all contributors. 
         def sort_list(data):
             for x in range(len(data)):
@@ -188,20 +188,20 @@ class MasterControls:
                     sorted_data[x][0] = '#' + sorted_data[x][0]
             return sorted_data
 
-        sorted_db_list = sort_list(formatted_db_list)
+        id_sorted_list = sort_list(formatted_db_list)
 
         # sort contributions by NEST working groups.
-        for x in range(len(sorted_db_list)):
-            if sorted_db_list[x][7] == 'Finance':
-                finance_list.append(sorted_db_list[x])
-            elif sorted_db_list[x][7] == 'Growth':
-                growth_list.append(sorted_db_list[x])
-            elif sorted_db_list[x][7] == 'Governance':
-                governance_list.append(sorted_db_list[x])
-            elif sorted_db_list[x][7] == 'Community':
-                community_list.append(sorted_db_list[x])
+        for x in range(len(id_sorted_list)):
+            if id_sorted_list[x][7] == 'Finance':
+                finance_list.append(id_sorted_list[x])
+            elif id_sorted_list[x][7] == 'Growth':
+                growth_list.append(id_sorted_list[x])
+            elif id_sorted_list[x][7] == 'Governance':
+                governance_list.append(id_sorted_list[x])
+            elif id_sorted_list[x][7] == 'Community':
+                community_list.append(id_sorted_list[x])
             else:
-                product_list.append(sorted_db_list[x]) 
+                product_list.append(id_sorted_list[x]) 
 
        #Batch updates contribution list for Finance Nest
         row_id = 4
@@ -238,7 +238,7 @@ class MasterControls:
     #Clears last MasterSheet Data
     #Resets sheet format
     def clearLastMonthsData(self):
-        range = ['A4:J500']
+        range = ['A4:K500']
         self.growth_nest.batch_clear(range)
         self.community_nest.batch_clear(range)
         self.product_nest.batch_clear(range)
